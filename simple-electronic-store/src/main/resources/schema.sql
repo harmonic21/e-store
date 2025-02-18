@@ -1,5 +1,5 @@
 CREATE TABLE IF NOT EXISTS product (
-    id SERIAL PRIMARY KEY,
+    id VARCHAR(36) PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
     price NUMERIC NOT NULL,
     description TEXT,
@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS product (
 );
 
 CREATE TABLE IF NOT EXISTS basket (
-    id SERIAL PRIMARY KEY,
+    id VARCHAR(36) PRIMARY KEY,
     id_product BIGINT NOT NULL,
     product_count BIGINT NOT NULL DEFAULT 0,
 
