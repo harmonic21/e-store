@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://www.thymeleaf.org ">
+<head>
+    <meta charset=utf-8>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
+<body>
+
+<h1>Витрина нашего магазина</h1>
+<br>
+
+<div th:each="product : ${products}">
+    <h3><a th:href="@{/product/{id}(id=${product.id})}" th:text="${product.title}"></a></h3>
+    <br>
+
+    <div th:utext="${product.price}"></div>
+
+    <div th:if="${#strings.length(product.image) > 0}">
+        <img th:src="${product.image}" alt="Image not loaded"/>
+    </div>
+    <br>
+    <button th:onclick="addProductToBasket()">+</button>
+<!--    <p th:id="${product.id}" th:text="${basket.productCount}">0</p>-->
+    <p>0</p>
+    <button th:onclick="deleteProductFromBasket()">-</button>
+</div>
+<br>
+<br>
+
+<form method="GET" th:action="@{/product}">
+    <label for="page-num"><b>Номер страницы</b></label>
+    <input type="number" th:name="page-num" required="true" th:value="${currentPageNum}"/>
+    <label for="page-size"><b>Размер страницы</b></label>
+    <input type="number" th:name="page-size" required="true" th:value="${currentPageSize}" />
+    <br>
+    <button>Обновить</button>
+</form>
+<br>
+
+<script>
+    function deleteProductFromBasket() {
+        val id = 1;
+        document.getElementById(id).innerHTML = (+document.getElementById(id).innerHTML) - (+1);
+        var xhr = new XMLHttpRequest();
+        xhr.open("PUT", "/basket/delete/" + id, true);
+        xhr.send();
+    }
+
+    function addProductToBasket() {
+        val id = 1;
+        document.getElementById(id).innerHTML = (+document.getElementById(id).innerHTML) + (+1);
+        var xhr = new XMLHttpRequest();
+        xhr.open("PUT", "/basket/add/" + id, true);
+        xhr.send();
+    }
+
+</script>
+</body>
+</html>

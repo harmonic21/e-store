@@ -1,13 +1,13 @@
 package ru.simple.electronic.store.dto;
 
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.experimental.Accessors;
 
 import java.math.BigDecimal;
 
-@Getter
-@Setter
+@Data
+@Accessors(chain = true)
 @NoArgsConstructor
 public class ProductDto {
 

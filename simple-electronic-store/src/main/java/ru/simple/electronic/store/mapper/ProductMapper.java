@@ -9,4 +9,6 @@ import ru.simple.electronic.store.entity.ProductEntity;
 public interface ProductMapper {
 
     ProductDto mapToProductDto(ProductEntity source);
+
+    ProductEntity mapToProductEntity(ProductDto source);
 }
