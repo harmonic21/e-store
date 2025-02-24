@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS product (
 
 CREATE TABLE IF NOT EXISTS basket (
     id VARCHAR(36) PRIMARY KEY,
-    id_product BIGINT NOT NULL,
+    id_product VARCHAR(36) NOT NULL,
     product_count BIGINT NOT NULL DEFAULT 0,
 
     FOREIGN KEY(id_product) REFERENCES product(id)
