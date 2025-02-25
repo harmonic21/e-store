@@ -1,6 +1,8 @@
 package ru.simple.electronic.store.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -10,8 +12,10 @@ import ru.simple.electronic.store.repository.ProductRepository;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @Transactional(readOnly = true)
@@ -23,10 +27,25 @@ public class ProductService {
     private final ProductRepository productRepository;
     private final ProductMapper productMapper;
 
-    public List<ProductDto> findAll() {
-        return productRepository.findAll().stream()
-                .map(productMapper::mapToProductDto)
-                .toList();
+    public List<ProductDto> findAll(Integer pageNum,
+                                    Integer pageSize,
+                                    String keyWord,
+                                    Boolean priceSortAsc,
+                                    Boolean abcSortAsc,
+                                    Boolean priceSortDesc,
+                                    Boolean abcSortDesc) {
+        Sort sort = applySort(priceSortAsc, abcSortAsc, priceSortDesc, abcSortDesc);
+        List<ProductDto> productList;
+        if (Objects.nonNull(keyWord)) {
+            productList = productRepository.findAllAndFilter("%" + keyWord +"%", PageRequest.of(pageNum, pageSize, sort)).stream()
+                    .map(productMapper::mapToProductDto)
+                    .toList();
+        } else {
+            productList = productRepository.findAll((PageRequest.of(pageNum, pageSize, sort))).stream()
+                    .map(productMapper::mapToProductDto)
+                    .toList();
+        }
+        return productList;
     }
 
     @Transactional
@@ -43,5 +62,26 @@ public class ProductService {
             e.printStackTrace();
             return "";
         }
+    }
+
+    private Sort applySort(Boolean priceSortAsc,
+                           Boolean abcSortAsc,
+                           Boolean priceSortDesc,
+                           Boolean abcSortDesc) {
+        List<Sort.Order> orders = new ArrayList<>();
+
+        if (Objects.nonNull(priceSortAsc)) {
+            orders.add(Sort.Order.asc("price"));
+        }
+        if (Objects.nonNull(abcSortAsc)) {
+            orders.add(Sort.Order.asc("title"));
+        }
+        if (Objects.nonNull(priceSortDesc)) {
+            orders.add(Sort.Order.desc("price"));
+        }
+        if (Objects.nonNull(abcSortDesc)) {
+            orders.add(Sort.Order.desc("title"));
+        }
+        return Sort.by(orders);
     }
 }

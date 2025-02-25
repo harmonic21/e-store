@@ -9,6 +9,25 @@
 
 <h1>Витрина нашего магазина</h1>
 <br>
+<form method="GET" th:action="@{/products}">
+    <label for="page-num"><b>Номер страницы</b></label>
+    <input type="number" th:name="page-num" required="true" th:value="${currentPageNum}"/>
+    <label for="page-size"><b>Размер страницы</b></label>
+    <input type="number" th:name="page-size" required="true" th:value="${currentPageSize}" />
+    <label for="key-word"><b>Фильтр по названию</b></label>
+    <input type="text" th:name="key-word" th:value="${currentKeyWord}"/>
+    <br>
+    <label for="price-sort-asc"><b>Сортировка по цене возрастающая</b></label>
+    <input type="checkbox" th:name="price-sort-asc"/>
+    <label for="abc-sort-asc"><b>Сортировка алфавиту возрастающая</b></label>
+    <input type="checkbox" th:name="abc-sort-asc"/>
+    <label for="price-sort-desc"><b>Сортировка по цене убывающая</b></label>
+    <input type="checkbox" th:name="price-sort-desc"/>
+    <label for="abc-sort-desc"><b>Сортировка алфавиту убывающая</b></label>
+    <input type="checkbox" th:name="abc-sort-desc"/>
+    <br>
+    <button>Обновить</button>
+</form>
 
 <div th:each="product : ${products}">
     <h3><a th:href="@{/product/{id}(id=${product.id})}" th:text="${product.title}"></a></h3>
@@ -26,15 +45,6 @@
 </div>
 <br>
 <br>
-
-<form method="GET" th:action="@{/product}">
-    <label for="page-num"><b>Номер страницы</b></label>
-    <input type="number" th:name="page-num" required="true" th:value="${currentPageNum}"/>
-    <label for="page-size"><b>Размер страницы</b></label>
-    <input type="number" th:name="page-size" required="true" th:value="${currentPageSize}" />
-    <br>
-    <button>Обновить</button>
-</form>
 <br>
 
 <script>

@@ -24,11 +24,24 @@ public class ProductController {
     }
 
     @GetMapping("/products")
-    public String getProducts(Model model) {
-        var allProducts = productService.findAll();
+    public String getProducts(Model model,
+                              @RequestParam(required = false, defaultValue = "10", name = "page-size") Integer pageSize,
+                              @RequestParam(required = false, defaultValue = "0", name = "page-num") Integer pageNum,
+                              @RequestParam(required = false, name = "key-word") String keyWord,
+                              @RequestParam(required = false, name = "price-sort-asc") Boolean priceSortAsc,
+                              @RequestParam(required = false, name = "abc-sort-asc") Boolean abcSortAsc,
+                              @RequestParam(required = false, name = "price-sort-desc") Boolean priceSortDesc,
+                              @RequestParam(required = false, name = "abc-sort-desc") Boolean abcSortDesc) {
+        var allProducts = productService.findAll(
+                pageNum, pageSize, keyWord, priceSortAsc, abcSortAsc, priceSortDesc, abcSortDesc
+        );
         model.addAttribute("products", allProducts);
+        model.addAttribute("currentPageNum", pageNum);
+        model.addAttribute("currentPageSize", pageSize);
+        model.addAttribute("currentKeyWord", keyWord);
         return "products";
     }
+
 
     @PostMapping("product/add")
     public String addProduct(@RequestParam(name = "title") String title,
