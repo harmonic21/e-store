@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
@@ -11,6 +12,7 @@ import ru.simple.electronic.store.dto.ProductDto;
 import ru.simple.electronic.store.service.ProductService;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 
 @Controller
 @RequiredArgsConstructor
@@ -55,5 +57,13 @@ public class ProductController {
                 image
                 );
         return "redirect:/";
+    }
+
+    @GetMapping("/product/{id}")
+    public String getProductById(@PathVariable("id") String id,
+                                 Model model) {
+        var product = productService.findById(UUID.fromString(id));
+        model.addAttribute("product", product);
+        return "product-detailed";
     }
 }

@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://www.thymeleaf.org ">
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
+<body>
+
+<a th:href="@{/}">Домой</a>
+
+<h1 th:text="${product.title}"></h1>
+
+<div th:if="${#strings.length(product.image) > 0}">
+    <img th:src="${product.image}" alt="Image not loaded"/>
+</div>
+<br>
+
+<div th:utext="${product.description}"></div>
+<div th:utext="${product.price}"></div>
+
+</body>
+</html>

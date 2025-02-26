@@ -12,10 +12,7 @@ import ru.simple.electronic.store.repository.ProductRepository;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Service
 @Transactional(readOnly = true)
@@ -52,6 +49,11 @@ public class ProductService {
     public void addProduct(ProductDto product, MultipartFile image) {
         product.setImage(imageToBase64(image));
         productRepository.save(productMapper.mapToProductEntity(product));
+    }
+
+    public ProductDto findById(UUID uuid) {
+        var productEntity = productRepository.getReferenceById(uuid);
+        return productMapper.mapToProductDto(productEntity);
     }
 
     private String imageToBase64(MultipartFile file) {
