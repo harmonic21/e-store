@@ -4,17 +4,11 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
-import java.math.BigDecimal;
-
 @Data
 @Accessors(chain = true)
 @NoArgsConstructor
-public class ProductDto {
+public class BasketDto {
 
     private String id;
-    private String title;
-    private BigDecimal price;
-    private String description;
-    private String image;
-    private BasketDto basket;
+    private Long productCount;
 }

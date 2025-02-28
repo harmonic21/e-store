@@ -39,4 +39,11 @@ public class BasketService {
         basket.setProductCount(productCount);
         basketRepository.save(basket);
     }
+
+    @Transactional
+    public void clearBasket(UUID productId) {
+        var basket = basketRepository.findByProductId(productId);
+        basket.setProductCount(0L);
+        basketRepository.save(basket);
+    }
 }

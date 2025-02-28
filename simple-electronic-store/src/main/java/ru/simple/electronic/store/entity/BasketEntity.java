@@ -19,5 +19,4 @@ public class BasketEntity {
     private ProductEntity product;
     @Column(name = "product_count")
     private Long productCount;
-
 }

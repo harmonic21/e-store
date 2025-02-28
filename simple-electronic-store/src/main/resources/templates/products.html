@@ -40,7 +40,7 @@
     </div>
     <br>
     <button th:id="${product.id}" th:onclick="addProductToBasket(this.id)">+</button>
-    <p th:id="${product.id} + '_count'">0</p>
+    <p th:id="${product.id} + '_count'" th:text="${product.basket} == null ? '0' : ${product.basket.productCount}"></p>
     <button th:id="${product.id}" th:onclick="deleteProductFromBasket(this.id)">-</button>
 </div>
 <br>

@@ -25,4 +25,6 @@ public class ProductEntity {
     private String description;
     @Column(name = "image")
     private String image;
+    @OneToOne(mappedBy = "product")
+    private BasketEntity basket;
 }

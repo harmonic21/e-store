@@ -17,6 +17,31 @@
 
 <div th:utext="${product.description}"></div>
 <div th:utext="${product.price}"></div>
+<br>
+<button th:id="${product.id}" th:onclick="addProductToBasket(this.id)">+</button>
+<p th:id="${product.id} + '_count'" th:text="${product.basket} == null ? '0' : ${product.basket.productCount}"></p>
+<button th:id="${product.id}" th:onclick="deleteProductFromBasket(this.id)">-</button>
+<br>
+<form method="POST" th:action="@{/basket/clear/{productId}(productId=${product.id})}">
+    <button>Удалить товар из корзины</button>
+</form>
+<br>
+<script>
+    function deleteProductFromBasket(id) {
+        if ((+document.getElementById(id + '_count').innerHTML) > 0 ) {
+            document.getElementById(id + '_count').innerHTML = (+document.getElementById(id + '_count').innerHTML) - (+1);
+            var xhr = new XMLHttpRequest();
+            xhr.open("PUT", "/basket/delete/" + id, true);
+            xhr.send();
+        }
+    }
 
+    function addProductToBasket(id) {
+        document.getElementById(id + '_count').innerHTML = (+document.getElementById(id + '_count').innerHTML) + (+1);
+        var xhr = new XMLHttpRequest();
+        xhr.open("PUT", "/basket/add/" + id, true);
+        xhr.send();
+    }
+</script>
 </body>
 </html>
