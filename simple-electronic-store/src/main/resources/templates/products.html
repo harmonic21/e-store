@@ -39,16 +39,16 @@
         <img th:src="${product.image}" alt="Image not loaded"/>
     </div>
     <br>
-    <button th:id="${product.id}" th:onclick="addProductToBasket(this.id)">+</button>
-    <p th:id="${product.id} + '_count'" th:text="${product.basket} == null ? '0' : ${product.basket.productCount}"></p>
-    <button th:id="${product.id}" th:onclick="deleteProductFromBasket(this.id)">-</button>
+    <button th:id="${product.id}" th:onclick="addProductToBasket([[${product.id}]],[[${basket.get(product.id)?.id}]])">+</button>
+    <p th:id="${product.id} + '_count'" th:text="${basket.get(product.id)?.productCount?:'0'}"></p>
+    <button th:id="${product.id}" th:onclick="deleteProductFromBasket([[${product.id}]],[[${basket.get(product.id)?.id}]])">-</button>
 </div>
 <br>
 <br>
 <br>
 
 <script>
-    function deleteProductFromBasket(id) {
+    function deleteProductFromBasket(productId, basketId) {
         if ((+document.getElementById(id + '_count').innerHTML) > 0 ) {
             document.getElementById(id + '_count').innerHTML = (+document.getElementById(id + '_count').innerHTML) - (+1);
             var xhr = new XMLHttpRequest();
@@ -57,7 +57,7 @@
         }
     }
 
-    function addProductToBasket(id) {
+    function addProductToBasket(productId, basketId) {
         document.getElementById(id + '_count').innerHTML = (+document.getElementById(id + '_count').innerHTML) + (+1);
         var xhr = new XMLHttpRequest();
         xhr.open("PUT", "/basket/add/" + id, true);

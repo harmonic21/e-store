@@ -9,20 +9,16 @@ import java.util.UUID;
 
 @Data
 @Entity
-@Table(name = "product")
+@Table(name = "product_order")
 @NoArgsConstructor
-public class ProductEntity {
+public class ProductOrderEntity {
 
     @Id
     @GeneratedValue
     @Column(name = "id")
     private UUID id;
-    @Column(name = "title")
-    private String title;
-    @Column(name = "price")
-    private BigDecimal price;
-    @Column(name = "description")
-    private String description;
-    @Column(name = "image")
-    private String image;
+    @Column(name = "order_sum")
+    private BigDecimal orderSum = BigDecimal.ZERO;
+    @Column(name = "status")
+    private String status;
 }

@@ -5,20 +5,19 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
 import java.math.BigDecimal;
+import java.util.Optional;
 import java.util.UUID;
 
 @Data
 @Accessors(chain = true)
 @NoArgsConstructor
-public class ProductDto {
+public class ProductOrderDto {
 
     private String id;
-    private String title;
-    private BigDecimal price;
-    private String description;
-    private String image;
+    private BigDecimal orderSum;
+    private String status;
 
     public UUID getIdAsUuid() {
-        return UUID.fromString(id);
+        return Optional.ofNullable(id).map(UUID::fromString).orElse(null);
     }
 }

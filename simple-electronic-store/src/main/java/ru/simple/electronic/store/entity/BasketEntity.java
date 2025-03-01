@@ -14,9 +14,13 @@ public class BasketEntity {
     @GeneratedValue
     @Column(name = "id")
     private UUID id;
+    @Column(name = "product_count")
+    private Long productCount = 0L;
     @OneToOne
     @JoinColumn(name = "id_product", referencedColumnName = "id")
     private ProductEntity product;
-    @Column(name = "product_count")
-    private Long productCount;
+    @OneToOne
+    @JoinColumn(name = "order_id", referencedColumnName = "id")
+    private ProductOrderEntity order;
+
 }

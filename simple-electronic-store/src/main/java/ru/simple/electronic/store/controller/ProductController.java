@@ -8,17 +8,24 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
+import ru.simple.electronic.store.dto.BasketDto;
 import ru.simple.electronic.store.dto.ProductDto;
+import ru.simple.electronic.store.service.BasketService;
+import ru.simple.electronic.store.service.ProductOrderService;
 import ru.simple.electronic.store.service.ProductService;
 
 import java.math.BigDecimal;
 import java.util.UUID;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Controller
 @RequiredArgsConstructor
 public class ProductController {
 
     private final ProductService productService;
+    private final ProductOrderService productOrderService;
+    private final BasketService basketService;
 
     @GetMapping("/")
     public String getIndexPage() {
@@ -37,7 +44,13 @@ public class ProductController {
         var allProducts = productService.findAll(
                 pageNum, pageSize, keyWord, priceSortAsc, abcSortAsc, priceSortDesc, abcSortDesc
         );
+        var currentOrder = productOrderService.findCurrentOrder();
+        var currentBasketByProductId = basketService.findAllBasketForOrder(currentOrder.getIdAsUuid()).stream()
+                .collect(Collectors.toMap(BasketDto::getProductId, Function.identity()));
+
         model.addAttribute("products", allProducts);
+        model.addAttribute("order", productOrderService.findCurrentOrder());
+        model.addAttribute("basket", currentBasketByProductId);
         model.addAttribute("currentPageNum", pageNum);
         model.addAttribute("currentPageSize", pageSize);
         model.addAttribute("currentKeyWord", keyWord);
