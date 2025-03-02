@@ -49,7 +49,7 @@ public class ProductController {
                 .collect(Collectors.toMap(BasketDto::getProductId, Function.identity()));
 
         model.addAttribute("products", allProducts);
-        model.addAttribute("order", productOrderService.findCurrentOrder());
+        model.addAttribute("order", currentOrder);
         model.addAttribute("basket", currentBasketByProductId);
         model.addAttribute("currentPageNum", pageNum);
         model.addAttribute("currentPageSize", pageSize);
@@ -75,8 +75,13 @@ public class ProductController {
     @GetMapping("/product/{id}")
     public String getProductById(@PathVariable("id") String id,
                                  Model model) {
-        var product = productService.findById(UUID.fromString(id));
+        var productId = UUID.fromString(id);
+        var product = productService.findById(productId);
+        var currentOrder = productOrderService.findCurrentOrder();
+
         model.addAttribute("product", product);
+        model.addAttribute("order", productOrderService.findCurrentOrder());
+        model.addAttribute("basket", basketService.findBasketForProduct(productId, currentOrder.getIdAsUuid()));
         return "product-detailed";
     }
 }

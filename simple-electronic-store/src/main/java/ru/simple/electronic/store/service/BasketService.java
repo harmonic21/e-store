@@ -33,6 +33,10 @@ public class BasketService {
                 .toList();
     }
 
+    public BasketDto findBasketForProduct(UUID productId, UUID orderId) {
+        return basketMapper.mapToDto(basketRepository.findByProductIdAndOrderId(productId, orderId));
+    }
+
     @Transactional
     public void addProduct(UUID productId) {
         productOrderRepository.findProductOrderByStatus("NEW")
@@ -65,20 +69,18 @@ public class BasketService {
     }
 
     @Transactional
-    public void deleteProduct(UUID productId) {
-        productOrderRepository.findProductOrderByStatus("NEW")
-                .ifPresent(order -> {
-                            var basket = basketRepository.findByProductIdAndOrderId(productId, order.getId());
-                            basket.setProductCount(basket.getProductCount() - 1);
-                            basketRepository.save(basket);
-                        }
-                );
+    public void deleteProduct(UUID basketId) {
+        basketRepository.findById(basketId).ifPresent(basket -> {
+            basket.setProductCount(basket.getProductCount() - 1);
+            basketRepository.save(basket);
+        });
     }
 
     @Transactional
-    public void clearBasket(UUID productId) {
-        var basket = basketRepository.findByProductId(productId);
-        basket.setProductCount(0L);
-        basketRepository.save(basket);
+    public void clearBasket(UUID basketId) {
+        basketRepository.findById(basketId).ifPresent(basket -> {
+            basket.setProductCount(0L);
+            basketRepository.save(basket);
+        });
     }
 }

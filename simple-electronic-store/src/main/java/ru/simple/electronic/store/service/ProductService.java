@@ -52,8 +52,7 @@ public class ProductService {
     }
 
     public ProductDto findById(UUID uuid) {
-        var productEntity = productRepository.getReferenceById(uuid);
-        return productMapper.mapToProductDto(productEntity);
+        return productRepository.findById(uuid).map(productMapper::mapToProductDto).orElse(null);
     }
 
     private String imageToBase64(MultipartFile file) {

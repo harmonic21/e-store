@@ -8,23 +8,24 @@
 
 <a th:href="@{/}">Домой</a>
 
-<h1 th:text="${product.title}"></h1>
+<h2>Текущие товары в корзине</h2>
+<div th:each="product : ${products}" style="display: inline-block; width: 20%; overflow: hidden; border-style: solid; text-align: center">
+    <h3>
+        <p th:text="${product.title}" style="text-align: center"></p>
+    </h3>
+    <br>
 
-<div th:if="${#strings.length(product.image) > 0}">
-    <img th:src="${product.image}" alt="Image not loaded"/>
+    <p th:utext="${product.price}" style="text-align: center"></p>
+
+    <br>
+    <button th:onclick="addProductToBasket([[${product.id}]])">+</button>
+    <p th:id="${product.id} + '_count'" th:text="${basket.get(product.id)?.productCount?:'0'}" style="text-align: center"></p>
+    <button th:onclick="deleteProductFromBasket([[${product.id}]],[[${basket.get(product.id)?.id}]])">-</button>
+    <button th:onclick="clearBasket([[${product.id}]],[[${basket?.id}]])">Удалить товар из корзины</button>
 </div>
-<br>
 
-<div th:utext="${product.description}"></div>
-<div th:utext="${product.price}"></div>
-<br>
-<button th:onclick="addProductToBasket([[${product.id}]])">+</button>
-<p th:id="${product.id} + '_count'" th:text="${basket?.productCount?:'0'}"></p>
-<button th:onclick="deleteProductFromBasket([[${product.id}]],[[${basket?.id}]])">-</button>
-<br>
-<button th:onclick="clearBasket([[${product.id}]],[[${basket?.id}]])">Удалить товар из корзины</button>
+<p th:text="Сумма заказа: [[${totalSum?:'0'}]]"></p>
 
-<br>
 <script>
     function deleteProductFromBasket(productId, basketId) {
         if ((+document.getElementById(productId + '_count').innerHTML) > 0 ) {

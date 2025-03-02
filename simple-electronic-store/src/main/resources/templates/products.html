@@ -29,19 +29,23 @@
     <button>Обновить</button>
 </form>
 
-<div th:each="product : ${products}">
-    <h3><a th:href="@{/product/{id}(id=${product.id})}" th:text="${product.title}"></a></h3>
+<div th:each="product : ${products}" style="display: inline-block; width: 20%; overflow: hidden; border-style: solid; text-align: center">
+    <h3>
+        <a th:href="@{/product/{id}(id=${product.id})}">
+            <p th:text="${product.title}" style="text-align: center"></p>
+        </a>
+    </h3>
     <br>
 
-    <div th:utext="${product.price}"></div>
+    <p th:utext="${product.price}" style="text-align: center"></p>
 
     <div th:if="${#strings.length(product.image) > 0}">
         <img th:src="${product.image}" alt="Image not loaded"/>
     </div>
     <br>
-    <button th:id="${product.id}" th:onclick="addProductToBasket([[${product.id}]],[[${basket.get(product.id)?.id}]])">+</button>
-    <p th:id="${product.id} + '_count'" th:text="${basket.get(product.id)?.productCount?:'0'}"></p>
-    <button th:id="${product.id}" th:onclick="deleteProductFromBasket([[${product.id}]],[[${basket.get(product.id)?.id}]])">-</button>
+    <button th:onclick="addProductToBasket([[${product.id}]])">+</button>
+    <p th:id="${product.id} + '_count'" th:text="${basket.get(product.id)?.productCount?:'0'}" style="text-align: center"></p>
+    <button th:onclick="deleteProductFromBasket([[${product.id}]],[[${basket.get(product.id)?.id}]])">-</button>
 </div>
 <br>
 <br>
@@ -49,18 +53,18 @@
 
 <script>
     function deleteProductFromBasket(productId, basketId) {
-        if ((+document.getElementById(id + '_count').innerHTML) > 0 ) {
-            document.getElementById(id + '_count').innerHTML = (+document.getElementById(id + '_count').innerHTML) - (+1);
+        if ((+document.getElementById(productId + '_count').innerHTML) > 0 ) {
+            document.getElementById(productId + '_count').innerHTML = (+document.getElementById(productId + '_count').innerHTML) - (+1);
             var xhr = new XMLHttpRequest();
-            xhr.open("PUT", "/basket/delete/" + id, true);
+            xhr.open("PUT", "/basket/delete/" + basketId, true);
             xhr.send();
         }
     }
 
-    function addProductToBasket(productId, basketId) {
-        document.getElementById(id + '_count').innerHTML = (+document.getElementById(id + '_count').innerHTML) + (+1);
+    function addProductToBasket(productId) {
+        document.getElementById(productId + '_count').innerHTML = (+document.getElementById(productId + '_count').innerHTML) + (+1);
         var xhr = new XMLHttpRequest();
-        xhr.open("PUT", "/basket/add/" + id, true);
+        xhr.open("PUT", "/basket/add/" + productId, true);
         xhr.send();
     }
 

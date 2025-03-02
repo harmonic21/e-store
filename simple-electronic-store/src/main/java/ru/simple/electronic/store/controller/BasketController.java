@@ -5,6 +5,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import ru.simple.electronic.store.service.BasketService;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @Controller
@@ -21,14 +22,24 @@ public class BasketController {
     }
 
     @ResponseBody
-    @PutMapping("/delete/{productId}")
-    public void deleteProductFromBasket(@PathVariable("productId") String productId) {
-        basketService.deleteProduct(UUID.fromString(productId));
+    @PutMapping("/delete/{basketId}")
+    public void deleteProductFromBasket(@PathVariable("basketId") String basketId) {
+        basketService.deleteProduct(fromNullableString(basketId));
     }
 
-    @PostMapping("/clear/{productId}")
-    public String clearBasket(@PathVariable("productId") String productId) {
-        basketService.clearBasket(UUID.fromString(productId));
-        return "redirect:/product/%s".formatted(productId);
+    @ResponseBody
+    @PutMapping("/clear/{basketId}")
+    public void clearBasket(@PathVariable("basketId") String basketId) {
+        basketService.clearBasket(UUID.fromString(basketId));
+    }
+
+    @GetMapping("/{orderId}/info")
+    public String getBasketInfoInCurrentOrder(@PathVariable("orderId") String orderId) {
+        // TODO информация о корзине
+        return "order-basket-info";
+    }
+
+    private UUID fromNullableString(String id) {
+        return Optional.ofNullable(id).map(UUID::fromString).orElse(null);
     }
 }
