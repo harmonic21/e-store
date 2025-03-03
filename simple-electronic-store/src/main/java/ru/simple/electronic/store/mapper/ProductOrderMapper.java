@@ -5,7 +5,7 @@ import org.mapstruct.MappingConstants;
 import ru.simple.electronic.store.dto.ProductOrderDto;
 import ru.simple.electronic.store.entity.ProductOrderEntity;
 
-@Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
+@Mapper(componentModel = MappingConstants.ComponentModel.SPRING, uses = BasketMapper.class)
 public interface ProductOrderMapper {
 
     ProductOrderDto mapToDto(ProductOrderEntity entity);

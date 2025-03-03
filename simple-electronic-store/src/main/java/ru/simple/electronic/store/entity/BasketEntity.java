@@ -16,10 +16,10 @@ public class BasketEntity {
     private UUID id;
     @Column(name = "product_count")
     private Long productCount = 0L;
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "id_product", referencedColumnName = "id")
     private ProductEntity product;
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "order_id", referencedColumnName = "id")
     private ProductOrderEntity order;
 

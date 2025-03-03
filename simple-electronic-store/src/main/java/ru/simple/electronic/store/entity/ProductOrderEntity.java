@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.UUID;
 
 @Data
@@ -21,4 +22,6 @@ public class ProductOrderEntity {
     private BigDecimal orderSum = BigDecimal.ZERO;
     @Column(name = "status")
     private String status;
+    @OneToMany(mappedBy = "order")
+    private List<BasketEntity> orderItems;
 }

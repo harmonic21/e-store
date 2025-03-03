@@ -11,5 +11,5 @@ public class BasketDto {
 
     private String id;
     private Long productCount;
-    private String productId;
+    private ProductDto productInfo;
 }

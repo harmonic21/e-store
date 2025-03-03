@@ -7,6 +7,8 @@
 </head>
 <body>
 
+<a th:href="@{/order/current/info}"><i class="fa fa-shopping-cart" style="font-size:36px; float: right"></i></a>
+
 <h1>Витрина нашего магазина</h1>
 <br>
 <form method="GET" th:action="@{/products}">
@@ -57,6 +59,9 @@
             document.getElementById(productId + '_count').innerHTML = (+document.getElementById(productId + '_count').innerHTML) - (+1);
             var xhr = new XMLHttpRequest();
             xhr.open("PUT", "/basket/delete/" + basketId, true);
+            xhr.onload = function () {
+                window.location.reload();
+            }
             xhr.send();
         }
     }
@@ -65,6 +70,9 @@
         document.getElementById(productId + '_count').innerHTML = (+document.getElementById(productId + '_count').innerHTML) + (+1);
         var xhr = new XMLHttpRequest();
         xhr.open("PUT", "/basket/add/" + productId, true);
+        xhr.onload = function () {
+            window.location.reload();
+        }
         xhr.send();
     }
 

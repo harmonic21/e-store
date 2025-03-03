@@ -33,12 +33,6 @@ public class BasketController {
         basketService.clearBasket(UUID.fromString(basketId));
     }
 
-    @GetMapping("/{orderId}/info")
-    public String getBasketInfoInCurrentOrder(@PathVariable("orderId") String orderId) {
-        // TODO информация о корзине
-        return "order-basket-info";
-    }
-
     private UUID fromNullableString(String id) {
         return Optional.ofNullable(id).map(UUID::fromString).orElse(null);
     }

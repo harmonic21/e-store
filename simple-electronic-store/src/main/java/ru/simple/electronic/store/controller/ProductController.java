@@ -1,6 +1,7 @@
 package ru.simple.electronic.store.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -8,13 +9,13 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
-import ru.simple.electronic.store.dto.BasketDto;
 import ru.simple.electronic.store.dto.ProductDto;
 import ru.simple.electronic.store.service.BasketService;
 import ru.simple.electronic.store.service.ProductOrderService;
 import ru.simple.electronic.store.service.ProductService;
 
 import java.math.BigDecimal;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -44,9 +45,9 @@ public class ProductController {
         var allProducts = productService.findAll(
                 pageNum, pageSize, keyWord, priceSortAsc, abcSortAsc, priceSortDesc, abcSortDesc
         );
-        var currentOrder = productOrderService.findCurrentOrder();
-        var currentBasketByProductId = basketService.findAllBasketForOrder(currentOrder.getIdAsUuid()).stream()
-                .collect(Collectors.toMap(BasketDto::getProductId, Function.identity()));
+        var currentOrder = productOrderService.findCurrentOrderOrCreateNew();
+        var currentBasketByProductId = CollectionUtils.emptyIfNull(currentOrder.getOrderItems()).stream()
+                        .collect(Collectors.toMap(basket -> basket.getProductInfo().getId(), Function.identity()));
 
         model.addAttribute("products", allProducts);
         model.addAttribute("order", currentOrder);
@@ -77,11 +78,15 @@ public class ProductController {
                                  Model model) {
         var productId = UUID.fromString(id);
         var product = productService.findById(productId);
-        var currentOrder = productOrderService.findCurrentOrder();
+        var currentOrder = productOrderService.findCurrentOrderOrCreateNew();
+        var basketForProduct = CollectionUtils.emptyIfNull(currentOrder.getOrderItems()).stream()
+                .filter(basket -> Objects.equals(basket.getProductInfo().getId(), id))
+                .findFirst()
+                .orElse(null);
 
         model.addAttribute("product", product);
-        model.addAttribute("order", productOrderService.findCurrentOrder());
-        model.addAttribute("basket", basketService.findBasketForProduct(productId, currentOrder.getIdAsUuid()));
+        model.addAttribute("order", currentOrder);
+        model.addAttribute("basket", basketForProduct);
         return "product-detailed";
     }
 }

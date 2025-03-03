@@ -8,6 +8,8 @@
 
 <a th:href="@{/}">Домой</a>
 
+<a th:href="@{/order/current/info}"><i class="fa fa-shopping-cart" style="font-size:36px; float: right"></i></a>
+
 <h1 th:text="${product.title}"></h1>
 
 <div th:if="${#strings.length(product.image) > 0}">
@@ -31,6 +33,9 @@
             document.getElementById(productId + '_count').innerHTML = (+document.getElementById(productId + '_count').innerHTML) - (+1);
             var xhr = new XMLHttpRequest();
             xhr.open("PUT", "/basket/delete/" + basketId, true);
+            xhr.onload = function () {
+                window.location.reload();
+            }
             xhr.send();
         }
     }
@@ -39,6 +44,9 @@
         document.getElementById(productId + '_count').innerHTML = (+document.getElementById(productId + '_count').innerHTML) + (+1);
         var xhr = new XMLHttpRequest();
         xhr.open("PUT", "/basket/add/" + productId, true);
+        xhr.onload = function () {
+            window.location.reload();
+        }
         xhr.send();
     }
 
@@ -47,6 +55,9 @@
             document.getElementById(productId + '_count').innerHTML = 0;
             var xhr = new XMLHttpRequest();
             xhr.open("PUT", "/basket/clear/" + basketId, true);
+            xhr.onload = function () {
+                window.location.reload();
+            }
             xhr.send();
         }
     }

@@ -9,6 +9,6 @@ import ru.simple.electronic.store.entity.BasketEntity;
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface BasketMapper {
 
-    @Mapping(target = "productId", source = "product.id")
+    @Mapping(target = "productInfo", source = "product")
     BasketDto mapToDto(BasketEntity entity);
 }

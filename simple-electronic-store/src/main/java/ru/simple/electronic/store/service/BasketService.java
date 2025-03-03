@@ -72,15 +72,16 @@ public class BasketService {
     public void deleteProduct(UUID basketId) {
         basketRepository.findById(basketId).ifPresent(basket -> {
             basket.setProductCount(basket.getProductCount() - 1);
-            basketRepository.save(basket);
+            if (basket.getProductCount() > 0) {
+                basketRepository.save(basket);
+            } else {
+                basketRepository.deleteById(basketId);
+            }
         });
     }
 
     @Transactional
     public void clearBasket(UUID basketId) {
-        basketRepository.findById(basketId).ifPresent(basket -> {
-            basket.setProductCount(0L);
-            basketRepository.save(basket);
-        });
+        basketRepository.deleteById(basketId);
     }
 }

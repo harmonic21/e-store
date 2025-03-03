@@ -9,22 +9,23 @@
 <a th:href="@{/}">Домой</a>
 
 <h2>Текущие товары в корзине</h2>
-<div th:each="product : ${products}" style="display: inline-block; width: 20%; overflow: hidden; border-style: solid; text-align: center">
+<div th:each="orderItem : ${order.orderItems}" style="display: inline-block; width: 20%; overflow: hidden; border-style: solid; text-align: center">
     <h3>
-        <p th:text="${product.title}" style="text-align: center"></p>
+        <p th:text="${orderItem.productInfo.title}" style="text-align: center"></p>
     </h3>
     <br>
 
-    <p th:utext="${product.price}" style="text-align: center"></p>
+    <p th:utext="${orderItem.productInfo.price}" style="text-align: center"></p>
 
     <br>
-    <button th:onclick="addProductToBasket([[${product.id}]])">+</button>
-    <p th:id="${product.id} + '_count'" th:text="${basket.get(product.id)?.productCount?:'0'}" style="text-align: center"></p>
-    <button th:onclick="deleteProductFromBasket([[${product.id}]],[[${basket.get(product.id)?.id}]])">-</button>
-    <button th:onclick="clearBasket([[${product.id}]],[[${basket?.id}]])">Удалить товар из корзины</button>
+    <button th:onclick="addProductToBasket([[${orderItem.productInfo.id}]])">+</button>
+    <p th:id="${orderItem.productInfo.id} + '_count'" th:text="${orderItem.productCount?:'0'}" style="text-align: center"></p>
+    <button th:onclick="deleteProductFromBasket([[${orderItem.productInfo.id}]],[[${orderItem.id}]])">-</button>
+    <br>
+    <button th:onclick="clearBasket([[${orderItem.productInfo.id}]],[[${orderItem.id}]])">Удалить товар из корзины</button>
 </div>
 
-<p th:text="Сумма заказа: [[${totalSum?:'0'}]]"></p>
+<p th:text="'Общая сумма заказа: ' + ${totalSum}"></p>
 
 <script>
     function deleteProductFromBasket(productId, basketId) {
@@ -32,6 +33,9 @@
             document.getElementById(productId + '_count').innerHTML = (+document.getElementById(productId + '_count').innerHTML) - (+1);
             var xhr = new XMLHttpRequest();
             xhr.open("PUT", "/basket/delete/" + basketId, true);
+            xhr.onload = function () {
+                window.location.reload();
+            }
             xhr.send();
         }
     }
@@ -40,6 +44,9 @@
         document.getElementById(productId + '_count').innerHTML = (+document.getElementById(productId + '_count').innerHTML) + (+1);
         var xhr = new XMLHttpRequest();
         xhr.open("PUT", "/basket/add/" + productId, true);
+        xhr.onload = function () {
+            window.location.reload();
+        }
         xhr.send();
     }
 
@@ -48,6 +55,9 @@
             document.getElementById(productId + '_count').innerHTML = 0;
             var xhr = new XMLHttpRequest();
             xhr.open("PUT", "/basket/clear/" + basketId, true);
+            xhr.onload = function () {
+                window.location.reload();
+            }
             xhr.send();
         }
     }
