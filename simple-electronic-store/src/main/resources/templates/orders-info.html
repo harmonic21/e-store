@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://www.thymeleaf.org ">
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
+<body>
+
+<a th:href="@{/}">Домой</a>
+
+<a th:href="@{/order/current/info}"><i class="fa fa-shopping-cart" style="font-size:36px; float: right"></i></a>
+
+<h2>Ваши завершенные заказы</h2>
+<div th:each="order : ${orders}">
+    <h3>
+        <p th:text="'Заказ ' + ${order.id}"></p>
+    </h3>
+    <p th:text="'Сумма заказа: ' + ${order.orderSum}"></p>
+    <hr>
+</div>
+
+<p th:text="'Общая сумма всех заказов: ' + ${totalSum}"></p>
+</body>
+</html>

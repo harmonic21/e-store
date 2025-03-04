@@ -1,12 +1,16 @@
 package ru.simple.electronic.store.service;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.simple.electronic.store.dto.ProductOrderDto;
 import ru.simple.electronic.store.entity.ProductOrderEntity;
 import ru.simple.electronic.store.mapper.ProductOrderMapper;
 import ru.simple.electronic.store.repository.ProductOrderRepository;
+
+import java.math.BigDecimal;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -22,6 +26,26 @@ public class ProductOrderService {
         return productOrderRepository.findProductOrderByStatus("NEW")
                 .map(productOrderMapper::mapToDto)
                 .orElseGet(this::createNewOrder);
+    }
+
+    public List<ProductOrderDto> findAllOrdersInStatusDone() {
+        return productOrderRepository.findAllProductOrderByStatus("DONE").stream()
+                .map(productOrderMapper::mapToDto)
+                .toList();
+    }
+
+    @Transactional
+    public void placeAnOrder() {
+        productOrderRepository.findProductOrderByStatus("NEW")
+                .ifPresent(order -> {
+                    var totalOrderSum = CollectionUtils.emptyIfNull(order.getOrderItems()).stream()
+                            .map(basket -> basket.getProduct().getPrice().multiply(BigDecimal.valueOf(basket.getProductCount())))
+                            .reduce(BigDecimal::add)
+                            .orElse(BigDecimal.ZERO);
+                    order.setOrderSum(totalOrderSum);
+                    order.setStatus("DONE");
+                    productOrderRepository.save(order);
+                });
     }
 
     private ProductOrderDto createNewOrder() {

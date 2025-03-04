@@ -47,7 +47,7 @@ public class BasketService {
     }
 
     private void addProductToBasketForCurrentOrder(UUID productId, ProductOrderEntity order) {
-        var basket = basketRepository.findByProductId(productId);
+        var basket = basketRepository.findByProductIdAndOrderId(productId, order.getId());
         if (Objects.nonNull(basket)) {
             long productCount = basket.getProductCount() + 1;
             basket.setProductCount(productCount);

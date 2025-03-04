@@ -8,6 +8,8 @@
 
 <a th:href="@{/}">Домой</a>
 
+<a th:href="@{/order/all}"><i class="fa fa-archive" style="font-size:36px; float: right"></i></a>
+
 <h2>Текущие товары в корзине</h2>
 <div th:each="orderItem : ${order.orderItems}" style="display: inline-block; width: 20%; overflow: hidden; border-style: solid; text-align: center">
     <h3>
@@ -26,6 +28,8 @@
 </div>
 
 <p th:text="'Общая сумма заказа: ' + ${totalSum}"></p>
+
+<button th:onclick="placeAnOrder()">Оформить заказ</button>
 
 <script>
     function deleteProductFromBasket(productId, basketId) {
@@ -60,6 +64,16 @@
             }
             xhr.send();
         }
+    }
+
+    function placeAnOrder() {
+        var xhr = new XMLHttpRequest();
+        xhr.open("PUT", "/order/place", true);
+        xhr.onload = function () {
+            alert("ВАШ ЗАКАЗ УСПЕШНО ОФОРМЛЕН");
+            window.location.replace(window.location.origin);
+        }
+        xhr.send();
     }
 </script>
 </body>
