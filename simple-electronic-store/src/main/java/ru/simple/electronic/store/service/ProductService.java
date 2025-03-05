@@ -51,6 +51,12 @@ public class ProductService {
         productRepository.save(productMapper.mapToProductEntity(product));
     }
 
+    @Transactional
+    public void saveNewProduct(List<ProductDto> products) {
+        var productEntities = products.stream().map(productMapper::mapToProductEntity).toList();
+        productRepository.saveAll(productEntities);
+    }
+
     public ProductDto findById(UUID uuid) {
         return productRepository.findById(uuid).map(productMapper::mapToProductDto).orElse(null);
     }

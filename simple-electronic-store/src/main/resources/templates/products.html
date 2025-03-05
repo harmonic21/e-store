@@ -9,14 +9,15 @@
 
 <a th:href="@{/order/current/info}"><i class="fa fa-shopping-cart" style="font-size:36px; float: right"></i></a>
 <a th:href="@{/order/all}"><i class="fa fa-archive" style="font-size:36px; float: right"></i></a>
+<a th:href="@{/product/upload}"><i class="fa fa-cloud-upload" style="font-size:36px"></i></a>
 
 <h1>Витрина нашего магазина</h1>
 <br>
 <form method="GET" th:action="@{/products}">
     <label for="page-num"><b>Номер страницы</b></label>
-    <input type="number" th:name="page-num" required="true" th:value="${currentPageNum}"/>
+    <input type="number" th:name="page-num" min="0" required="true" th:value="${currentPageNum}"/>
     <label for="page-size"><b>Размер страницы</b></label>
-    <input type="number" th:name="page-size" required="true" th:value="${currentPageSize}" />
+    <input type="number" th:name="page-size" min="0" required="true" th:value="${currentPageSize}" />
     <label for="key-word"><b>Фильтр по названию</b></label>
     <input type="text" th:name="key-word" th:value="${currentKeyWord}"/>
     <br>

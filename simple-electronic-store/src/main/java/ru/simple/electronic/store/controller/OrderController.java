@@ -3,10 +3,7 @@ package ru.simple.electronic.store.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import ru.simple.electronic.store.dto.ProductOrderDto;
 import ru.simple.electronic.store.service.ProductOrderService;
 
@@ -45,6 +42,13 @@ public class OrderController {
     @ResponseBody
     public void placeAnOrder() {
         productOrderService.placeAnOrder();
+    }
+
+    @GetMapping("/detail/{id}")
+    public String getDetailInfo(Model model,
+                                @PathVariable("id") String id) {
+        model.addAttribute("order", productOrderService.getDetailInfoById(UUID.fromString(id)));
+        return "order-detail-info";
     }
 
     private UUID fromNullableString(String id) {

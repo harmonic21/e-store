@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://www.thymeleaf.org ">
+<head>
+    <meta charset=utf-8>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
+<body>
+
+<a th:href="@{/}">Домой</a>
+
+<h1>Загрузка витрины</h1>
+<p>
+    Загрузите файл в формате CSV. <br>
+    <b>Заголовки:</b> title,price,description,image <br>
+    <b>Формат данных:</b> <br>
+        title - text <br>
+        price - double <br>
+        description - text <br>
+        image - text (base64) <br>
+</p>
+<br>
+<form method="POST" th:action="@{/product/upload}" enctype="multipart/form-data">
+    <label for="file"><b>CSV файл</b></label>
+    <input type="file" th:name="file" required="true"/>
+    <br>
+    <button>Загрузить</button>
+</form>
+
+</body>
+</html>

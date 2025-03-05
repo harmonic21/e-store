@@ -11,10 +11,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import ru.simple.electronic.store.dto.ProductDto;
 import ru.simple.electronic.store.service.BasketService;
+import ru.simple.electronic.store.service.CsvReaderService;
 import ru.simple.electronic.store.service.ProductOrderService;
 import ru.simple.electronic.store.service.ProductService;
 
+import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.function.Function;
@@ -27,6 +30,7 @@ public class ProductController {
     private final ProductService productService;
     private final ProductOrderService productOrderService;
     private final BasketService basketService;
+    private final CsvReaderService csvReaderService;
 
     @GetMapping("/")
     public String getIndexPage() {
@@ -88,5 +92,16 @@ public class ProductController {
         model.addAttribute("order", currentOrder);
         model.addAttribute("basket", basketForProduct);
         return "product-detailed";
+    }
+
+    @GetMapping("/product/upload")
+    public String getUploadPage() {
+        return "upload-product";
+    }
+
+    @PostMapping("/product/upload")
+    public String uploadProduct(@RequestParam("file") MultipartFile csvFile) throws IOException {
+        productService.saveNewProduct(csvReaderService.readCsv(csvFile.getBytes()));
+        return "redirect:/";
     }
 }

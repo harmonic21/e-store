@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://www.thymeleaf.org ">
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
+<body>
+
+<a th:href="@{/}">Домой</a>
+
+<a th:href="@{/order/current/info}"><i class="fa fa-shopping-cart" style="font-size:36px; float: right"></i></a>
+<a th:href="@{/order/all}"><i class="fa fa-archive" style="font-size:36px; float: right"></i></a>
+
+<h2>
+    <b><p th:text="'Информация о заказе ' + ${order.id}"></p></b>
+</h2>
+<div th:each="orderItem : ${order.orderItems}" style="display: inline-block; width: 20%; overflow: hidden; border-style: solid; text-align: center">
+    <h3>
+        <p th:text="${orderItem.productInfo.title}" style="text-align: center"></p>
+    </h3>
+    <br>
+
+    <p th:utext="'Цена: ' + ${orderItem.productInfo.price}" style="text-align: center"></p>
+    <p th:text="'Количество: ' + ${orderItem.productCount?:'0'}" style="text-align: center"></p>
+</div>
+
+<p th:text="'Статус: ' + ${order.status}"></p>
+<p th:text="'Общая сумма заказа: ' + ${order.orderSum}"></p>
+
+</body>
+</html>

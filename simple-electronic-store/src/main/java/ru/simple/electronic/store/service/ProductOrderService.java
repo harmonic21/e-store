@@ -11,6 +11,7 @@ import ru.simple.electronic.store.repository.ProductOrderRepository;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -46,6 +47,10 @@ public class ProductOrderService {
                     order.setStatus("DONE");
                     productOrderRepository.save(order);
                 });
+    }
+
+    public ProductOrderDto getDetailInfoById(UUID id) {
+        return productOrderRepository.findById(id).map(productOrderMapper::mapToDto).orElse(null);
     }
 
     private ProductOrderDto createNewOrder() {

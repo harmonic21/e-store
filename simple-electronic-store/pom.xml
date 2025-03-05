@@ -55,6 +55,10 @@
       <artifactId>mapstruct</artifactId>
       <version>${org.mapstruct.version}</version>
     </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.dataformat</groupId>
+      <artifactId>jackson-dataformat-csv</artifactId>
+    </dependency>
   </dependencies>
 
   <build>

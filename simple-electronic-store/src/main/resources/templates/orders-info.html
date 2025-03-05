@@ -13,7 +13,9 @@
 <h2>Ваши завершенные заказы</h2>
 <div th:each="order : ${orders}">
     <h3>
-        <p th:text="'Заказ ' + ${order.id}"></p>
+        <a th:href="@{/order/detail/{id}(id=${order.id})}">
+            <p th:text="'Заказ ' + ${order.id}"></p>
+        </a>
     </h3>
     <p th:text="'Сумма заказа: ' + ${order.orderSum}"></p>
     <hr>
