@@ -4,7 +4,7 @@
 
   <groupId>org.example</groupId>
   <artifactId>simple-electronic-store</artifactId>
-  <packaging>war</packaging>
+  <packaging>jar</packaging>
 
   <version>1.0-SNAPSHOT</version>
   <name>simple-electronic-store</name>
@@ -88,6 +88,13 @@
               <version>0.2.0</version>
             </path>
           </annotationProcessorPaths>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-maven-plugin</artifactId>
+        <configuration>
+          <mainClass>ru.simple.electronic.store.Application</mainClass>
         </configuration>
       </plugin>
     </plugins>
