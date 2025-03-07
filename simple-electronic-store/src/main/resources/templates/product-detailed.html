@@ -3,6 +3,7 @@
       xsi:schemaLocation="http://www.thymeleaf.org ">
 <head>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/css/img.css">
 </head>
 <body>
 
@@ -13,13 +14,13 @@
 
 <h1 th:text="${product.title}"></h1>
 
-<div th:if="${#strings.length(product.image) > 0}">
-    <img th:src="${product.image}" alt="Image not loaded"/>
+<div th:if="${#strings.length(product.image) > 0}" class="img-container">
+    <img th:src="'data:image/jpeg;base64,' + ${product.image}" alt="Image not loaded"/>
 </div>
 <br>
 
-<div th:utext="${product.description}"></div>
-<div th:utext="${product.price}"></div>
+<div th:text="${product.description}"></div>
+<div th:utext="'<b>Цена:</b>' + ${product.price}"></div>
 <br>
 <button th:onclick="addProductToBasket([[${product.id}]])">+</button>
 <p th:id="${product.id} + '_count'" th:text="${basket?.productCount?:'0'}"></p>
@@ -28,40 +29,7 @@
 <button th:onclick="clearBasket([[${product.id}]],[[${basket?.id}]])">Удалить товар из корзины</button>
 
 <br>
-<script>
-    function deleteProductFromBasket(productId, basketId) {
-        if ((+document.getElementById(productId + '_count').innerHTML) > 0 ) {
-            document.getElementById(productId + '_count').innerHTML = (+document.getElementById(productId + '_count').innerHTML) - (+1);
-            var xhr = new XMLHttpRequest();
-            xhr.open("PUT", "/basket/delete/" + basketId, true);
-            xhr.onload = function () {
-                window.location.reload();
-            }
-            xhr.send();
-        }
-    }
+<script type="text/javascript" th:src="@{/js/basket-func.js}"></script>
 
-    function addProductToBasket(productId) {
-        document.getElementById(productId + '_count').innerHTML = (+document.getElementById(productId + '_count').innerHTML) + (+1);
-        var xhr = new XMLHttpRequest();
-        xhr.open("PUT", "/basket/add/" + productId, true);
-        xhr.onload = function () {
-            window.location.reload();
-        }
-        xhr.send();
-    }
-
-     function clearBasket(productId, basketId) {
-        if ((+document.getElementById(productId + '_count').innerHTML) > 0 ) {
-            document.getElementById(productId + '_count').innerHTML = 0;
-            var xhr = new XMLHttpRequest();
-            xhr.open("PUT", "/basket/clear/" + basketId, true);
-            xhr.onload = function () {
-                window.location.reload();
-            }
-            xhr.send();
-        }
-    }
-</script>
 </body>
 </html>

@@ -46,12 +46,6 @@ public class ProductService {
     }
 
     @Transactional
-    public void addProduct(ProductDto product, MultipartFile image) {
-        product.setImage(imageToBase64(image));
-        productRepository.save(productMapper.mapToProductEntity(product));
-    }
-
-    @Transactional
     public void saveNewProduct(List<ProductDto> products) {
         var productEntities = products.stream().map(productMapper::mapToProductEntity).toList();
         productRepository.saveAll(productEntities);

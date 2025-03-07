@@ -22,6 +22,6 @@ public class ProductOrderEntity {
     private BigDecimal orderSum = BigDecimal.ZERO;
     @Column(name = "status")
     private String status;
-    @OneToMany(mappedBy = "order")
+    @OneToMany(mappedBy = "order", fetch = FetchType.EAGER)
     private List<BasketEntity> orderItems;
 }

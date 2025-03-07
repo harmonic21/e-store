@@ -7,8 +7,6 @@ import org.apache.commons.collections4.CollectionUtils;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 
 @Data
 @Accessors(chain = true)
@@ -19,10 +17,6 @@ public class ProductOrderDto {
     private BigDecimal orderSum;
     private String status;
     private List<BasketDto> orderItems;
-
-    public UUID getIdAsUuid() {
-        return Optional.ofNullable(id).map(UUID::fromString).orElse(null);
-    }
 
     public BigDecimal getCurrentSum() {
         return CollectionUtils.emptyIfNull(orderItems).stream()

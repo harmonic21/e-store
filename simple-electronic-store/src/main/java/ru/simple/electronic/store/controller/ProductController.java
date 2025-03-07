@@ -9,15 +9,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
-import ru.simple.electronic.store.dto.ProductDto;
-import ru.simple.electronic.store.service.BasketService;
 import ru.simple.electronic.store.service.CsvReaderService;
 import ru.simple.electronic.store.service.ProductOrderService;
 import ru.simple.electronic.store.service.ProductService;
 
 import java.io.IOException;
-import java.math.BigDecimal;
-import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.function.Function;
@@ -29,7 +25,6 @@ public class ProductController {
 
     private final ProductService productService;
     private final ProductOrderService productOrderService;
-    private final BasketService basketService;
     private final CsvReaderService csvReaderService;
 
     @GetMapping("/")
@@ -60,21 +55,6 @@ public class ProductController {
         model.addAttribute("currentPageSize", pageSize);
         model.addAttribute("currentKeyWord", keyWord);
         return "products";
-    }
-
-
-    @PostMapping("product/add")
-    public String addProduct(@RequestParam(name = "title") String title,
-                             @RequestParam(name = "price") BigDecimal price,
-                             @RequestParam(name = "description") String description,
-                             @RequestParam(name = "image") MultipartFile image) {
-        productService.addProduct(new ProductDto()
-                        .setTitle(title)
-                        .setPrice(price)
-                        .setDescription(description),
-                image
-                );
-        return "redirect:/";
     }
 
     @GetMapping("/product/{id}")

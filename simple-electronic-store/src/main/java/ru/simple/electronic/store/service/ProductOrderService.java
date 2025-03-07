@@ -17,8 +17,6 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class ProductOrderService {
 
-    private static final ProductOrderDto EMPTY_ORDER = new ProductOrderDto();
-
     private final ProductOrderRepository productOrderRepository;
     private final ProductOrderMapper productOrderMapper;
 

@@ -3,6 +3,7 @@
       xsi:schemaLocation="http://www.thymeleaf.org ">
 <head>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/css/img.css">
 </head>
 <body>
 
@@ -19,6 +20,9 @@
         <p th:text="${orderItem.productInfo.title}" style="text-align: center"></p>
     </h3>
     <br>
+    <div th:if="${#strings.length(orderItem.productInfo.image) > 0}" class="img-container">
+        <img th:src="'data:image/jpeg;base64,' + ${orderItem.productInfo.image}" alt="Image not loaded"/>
+    </div>
 
     <p th:utext="'Цена: ' + ${orderItem.productInfo.price}" style="text-align: center"></p>
     <p th:text="'Количество: ' + ${orderItem.productCount?:'0'}" style="text-align: center"></p>
