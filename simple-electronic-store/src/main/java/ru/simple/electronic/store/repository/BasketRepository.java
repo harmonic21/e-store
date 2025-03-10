@@ -1,13 +1,14 @@
 package ru.simple.electronic.store.repository;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.r2dbc.repository.R2dbcRepository;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 import ru.simple.electronic.store.entity.BasketEntity;
 
-import java.util.List;
 import java.util.UUID;
 
-public interface BasketRepository extends JpaRepository<BasketEntity, UUID> {
+public interface BasketRepository extends R2dbcRepository<BasketEntity, UUID> {
 
-    BasketEntity findByProductIdAndOrderId(UUID productId, UUID orderId);
-    List<BasketEntity> findAllByOrderId(UUID orderId);
+    Mono<BasketEntity> findByProductIdAndOrderId(UUID productId, UUID orderId);
+    Flux<BasketEntity> findAllByOrderId(UUID orderId);
 }

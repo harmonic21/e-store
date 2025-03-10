@@ -13,6 +13,7 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+
 @SpringBootTest
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -33,10 +34,10 @@ class ProductOrderServiceTest {
     @Test
     @Order(1)
     void findCurrentOrderOrCreateNew() {
-        assertTrue(CollectionUtils.isEmpty(productOrderRepository.findAll()));
+        assertTrue(CollectionUtils.isEmpty(productOrderRepository.findAll().collectList().block()));
 
         productOrderService.findCurrentOrderOrCreateNew();
-        List<ProductOrderEntity> after = productOrderRepository.findAll();
+        List<ProductOrderEntity> after = productOrderRepository.findAll().collectList().block();
         assertTrue(CollectionUtils.isNotEmpty(after));
         assertEquals(1, after.size());
 
@@ -50,9 +51,9 @@ class ProductOrderServiceTest {
     @Test
     @Order(2)
     void placeAnOrder() {
-        productOrderRepository.findAll().forEach(order -> assertNotEquals("DONE", order.getStatus()));
+        productOrderRepository.findAll().collectList().block().forEach(order -> assertNotEquals("DONE", order.getStatus()));
         productOrderService.placeAnOrder();
-        productOrderRepository.findAll().forEach(order -> assertEquals("DONE", order.getStatus()));
+        productOrderRepository.findAll().collectList().block().forEach(order -> assertEquals("DONE", order.getStatus()));
     }
 
     @Test

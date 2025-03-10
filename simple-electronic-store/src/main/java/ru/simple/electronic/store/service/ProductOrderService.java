@@ -22,20 +22,20 @@ public class ProductOrderService {
 
     @Transactional
     public ProductOrderDto findCurrentOrderOrCreateNew() {
-        return productOrderRepository.findProductOrderByStatus("NEW")
+        return productOrderRepository.findProductOrderByStatus("NEW").blockOptional()
                 .map(productOrderMapper::mapToDto)
                 .orElseGet(this::createNewOrder);
     }
 
     public List<ProductOrderDto> findAllOrdersInStatusDone() {
-        return productOrderRepository.findAllProductOrderByStatus("DONE").stream()
+        return productOrderRepository.findAllProductOrderByStatus("DONE").collectList().block().stream()
                 .map(productOrderMapper::mapToDto)
                 .toList();
     }
 
     @Transactional
     public void placeAnOrder() {
-        productOrderRepository.findProductOrderByStatus("NEW")
+        productOrderRepository.findProductOrderByStatus("NEW").blockOptional()
                 .ifPresent(order -> {
                     var totalOrderSum = CollectionUtils.emptyIfNull(order.getOrderItems()).stream()
                             .map(basket -> basket.getProduct().getPrice().multiply(BigDecimal.valueOf(basket.getProductCount())))
@@ -48,12 +48,12 @@ public class ProductOrderService {
     }
 
     public ProductOrderDto getDetailInfoById(UUID id) {
-        return productOrderRepository.findById(id).map(productOrderMapper::mapToDto).orElse(null);
+        return productOrderRepository.findById(id).map(productOrderMapper::mapToDto).blockOptional().orElse(null);
     }
 
     private ProductOrderDto createNewOrder() {
         ProductOrderEntity orderEntity = new ProductOrderEntity();
         orderEntity.setStatus("NEW");
-        return productOrderMapper.mapToDto(productOrderRepository.save(orderEntity));
+        return productOrderMapper.mapToDto(productOrderRepository.save(orderEntity).block());
     }
 }

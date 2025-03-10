@@ -1,7 +1,6 @@
 package ru.simple.electronic.store.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,11 +33,11 @@ public class ProductService {
         Sort sort = applySort(priceSortAsc, abcSortAsc, priceSortDesc, abcSortDesc);
         List<ProductDto> productList;
         if (Objects.nonNull(keyWord)) {
-            productList = productRepository.findAllAndFilter("%" + keyWord +"%", PageRequest.of(pageNum, pageSize, sort)).stream()
+            productList = productRepository.findAllAndFilter("%" + keyWord +"%", sort).collectList().block().stream()
                     .map(productMapper::mapToProductDto)
                     .toList();
         } else {
-            productList = productRepository.findAll((PageRequest.of(pageNum, pageSize, sort))).stream()
+            productList = productRepository.findAll(sort).collectList().block().stream()
                     .map(productMapper::mapToProductDto)
                     .toList();
         }
@@ -52,7 +51,7 @@ public class ProductService {
     }
 
     public ProductDto findById(UUID uuid) {
-        return productRepository.findById(uuid).map(productMapper::mapToProductDto).orElse(null);
+        return productRepository.findById(uuid).blockOptional().map(productMapper::mapToProductDto).orElse(null);
     }
 
     private String imageToBase64(MultipartFile file) {
