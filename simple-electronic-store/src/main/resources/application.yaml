@@ -1,13 +1,16 @@
+logging:
+  level:
+    org:
+      springframework:
+        r2dbc: TRACE
 spring:
+  thymeleaf:
+    encoding: UTF-8
+  r2dbc:
+    url: r2dbc:h2:file:///~/web_blog-h2-db;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALS;
+    username: sa
+    password:
   jpa:
     hibernate:
       ddl-auto: none
-    show-sql: false
-  datasource:
-    url: r2dbc:h2:mem:web_blog;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALS;INIT=RUNSCRIPT FROM 'classpath:schema.sql'
-    driver-class-name: org.h2.Driver
-    username: sa
-    password:
-  h2:
-    console:
-      enabled: true
+    show-sql: true

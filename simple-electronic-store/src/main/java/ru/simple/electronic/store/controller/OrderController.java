@@ -4,11 +4,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.reactive.result.view.Rendering;
+import reactor.core.publisher.Mono;
 import ru.simple.electronic.store.dto.ProductOrderDto;
 import ru.simple.electronic.store.service.ProductOrderService;
 
 import java.math.BigDecimal;
-import java.util.Optional;
 import java.util.UUID;
 
 @Controller
@@ -19,39 +20,43 @@ public class OrderController {
     private final ProductOrderService productOrderService;
 
     @GetMapping("/current/info")
-    public String getCurrentOrderInfo(Model model) {
-        var order = productOrderService.findCurrentOrderOrCreateNew();
-        model.addAttribute("order", order);
-        model.addAttribute("totalSum", order.getCurrentSum());
-        return "order-basket-info";
+    public Mono<Rendering> getCurrentOrderInfo(Model model) {
+        return Mono.just(
+                Rendering.view("order-basket-info")
+                        .modelAttribute("order", productOrderService.findCurrentOrderOrCreateNew())
+                        .build()
+        );
     }
 
     @GetMapping("/all")
-    public String getAllOrdersInStatusDone(Model model) {
+    public Mono<Rendering> getAllOrdersInStatusDone(Model model) {
         var ordersInStatusDone = productOrderService.findAllOrdersInStatusDone();
-        var totalOrdersSum = ordersInStatusDone.stream()
+        var totalOrdersSum = ordersInStatusDone
                 .map(ProductOrderDto::getOrderSum)
                 .reduce(BigDecimal::add)
-                .orElse(BigDecimal.ZERO);
-        model.addAttribute("orders", ordersInStatusDone);
-        model.addAttribute("totalSum", totalOrdersSum);
-        return "orders-info";
+                .defaultIfEmpty(BigDecimal.ZERO);
+        return Mono.just(
+                Rendering.view("orders-info")
+                        .modelAttribute("orders", ordersInStatusDone)
+                        .modelAttribute("totalSum", totalOrdersSum)
+                        .build()
+        );
     }
 
     @PutMapping("/place")
     @ResponseBody
-    public void placeAnOrder() {
-        productOrderService.placeAnOrder();
+    public Mono<Void> placeAnOrder() {
+        return productOrderService.placeAnOrder();
     }
 
     @GetMapping("/detail/{id}")
-    public String getDetailInfo(Model model,
-                                @PathVariable("id") String id) {
-        model.addAttribute("order", productOrderService.getDetailInfoById(UUID.fromString(id)));
-        return "order-detail-info";
-    }
-
-    private UUID fromNullableString(String id) {
-        return Optional.ofNullable(id).map(UUID::fromString).orElse(null);
+    public Mono<Rendering> getDetailInfo(Model model,
+                                         @PathVariable("id") UUID id) {
+        model.addAttribute("order", productOrderService.getDetailInfoById(id));
+        return Mono.just(
+                Rendering.view("order-detail-info")
+                        .modelAttribute("order", productOrderService.getDetailInfoById(id))
+                        .build()
+        );
     }
 }

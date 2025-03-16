@@ -7,13 +7,14 @@ import org.apache.commons.collections4.CollectionUtils;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.UUID;
 
 @Data
 @Accessors(chain = true)
 @NoArgsConstructor
 public class ProductOrderDto {
 
-    private String id;
+    private UUID id;
     private BigDecimal orderSum;
     private String status;
     private List<BasketDto> orderItems;

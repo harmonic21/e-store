@@ -5,7 +5,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.util.function.Tuple2;
 import ru.simple.electronic.store.dto.BasketDto;
+import ru.simple.electronic.store.dto.ProductDto;
 import ru.simple.electronic.store.entity.BasketEntity;
 import ru.simple.electronic.store.entity.ProductOrderEntity;
 import ru.simple.electronic.store.mapper.BasketMapper;
@@ -13,7 +15,7 @@ import ru.simple.electronic.store.repository.BasketRepository;
 import ru.simple.electronic.store.repository.ProductOrderRepository;
 import ru.simple.electronic.store.repository.ProductRepository;
 
-import java.util.*;
+import java.util.UUID;
 
 @Service
 @Transactional(readOnly = true)
@@ -22,20 +24,21 @@ public class BasketService {
 
     private final BasketRepository basketRepository;
     private final ProductRepository productRepository;
+    private final ProductService productService;
     private final ProductOrderRepository productOrderRepository;
 
     private final BasketMapper basketMapper;
 
-    //TODO переделвть на реактивную цепочку
-    public List<BasketDto> findAllBasketForOrder(UUID orderId) {
-        return Optional.ofNullable(orderId)
-                .map(basketRepository::findAllByOrderId)
-                .map(Flux::collectList)
-                .map(Mono::block)
-                .stream()
-                .flatMap(Collection::stream)
-                .map(basketMapper::mapToDto)
-                .toList();
+    public Flux<BasketDto> findAllBasketForOrder(UUID orderId) {
+        return Mono.just(orderId)
+                .flatMapMany(basketRepository::findAllByOrderId)
+                .flatMap(this::enrichProductInfo)
+                .map(basketMapper::mapToDto);
+    }
+
+    private Mono<Tuple2<BasketEntity, ProductDto>> enrichProductInfo(BasketEntity basketEntity) {
+        return Mono.just(basketEntity)
+                .zipWith(productService.findById(basketEntity.getProductId()));
     }
 
     public BasketDto findBasketForProduct(UUID productId, UUID orderId) {
@@ -43,50 +46,36 @@ public class BasketService {
     }
 
     @Transactional
-    public void addProduct(UUID productId) {
-        productOrderRepository.findProductOrderByStatus("NEW").blockOptional()
-                .ifPresentOrElse(
-                        order -> addProductToBasketForCurrentOrder(productId, order),
-                        () -> createNewOrderAndAddProduct(productId)
-                );
+    public Mono<UUID> addProduct(UUID productId) {
+        return productOrderRepository.findProductOrderByStatus("NEW")
+                .switchIfEmpty(createNewOrder())
+                .flatMap(order -> addProductToBasketForCurrentOrder(productId, order));
     }
 
-    private void addProductToBasketForCurrentOrder(UUID productId, ProductOrderEntity order) {
-        var basket = basketRepository.findByProductIdAndOrderId(productId, order.getId()).block();
-        if (Objects.nonNull(basket)) {
-            long productCount = basket.getProductCount() + 1;
-            basket.setProductCount(productCount);
-        } else {
-            basket = new BasketEntity();
-            basket.setProduct(productRepository.findById(productId).block());
-            basket.setOrder(order);
-            basket.setProductCount(1L);
-        }
-        basketRepository.save(basket);
+    private Mono<UUID> addProductToBasketForCurrentOrder(UUID productId, ProductOrderEntity order) {
+        return basketRepository.findByProductIdAndOrderId(productId, order.getId())
+                .defaultIfEmpty(new BasketEntity().withId(UUID.randomUUID()).withProductId(productId).withOrderId(order.getId()))
+                .doOnNext(basket -> basket.setProductCount(basket.getProductCount() + 1))
+                .flatMap(basketRepository::save)
+                .map(BasketEntity::getId);
     }
 
-    private void createNewOrderAndAddProduct(UUID productId) {
-        ProductOrderEntity order = new ProductOrderEntity();
+    private Mono<ProductOrderEntity> createNewOrder() {
+        ProductOrderEntity order = new ProductOrderEntity().withId(UUID.randomUUID());
         order.setStatus("NEW");
-        productOrderRepository.save(order);
-
-        addProductToBasketForCurrentOrder(productId, order);
+        return productOrderRepository.save(order);
     }
 
     @Transactional
-    public void deleteProduct(UUID basketId) {
-        basketRepository.findById(basketId).blockOptional().ifPresent(basket -> {
-            basket.setProductCount(basket.getProductCount() - 1);
-            if (basket.getProductCount() > 0) {
-                basketRepository.save(basket);
-            } else {
-                basketRepository.deleteById(basketId);
-            }
-        });
+    public Mono<UUID> deleteProduct(UUID basketId) {
+        return basketRepository.findById(basketId)
+                .doOnNext(basketEntity -> basketEntity.setProductCount(basketEntity.getProductCount() - 1))
+                .flatMap(basketEntity -> basketEntity.getProductCount() > 0 ? basketRepository.save(basketEntity) : basketRepository.delete(basketEntity))
+                .thenReturn(basketId);
     }
 
     @Transactional
-    public void clearBasket(UUID basketId) {
-        basketRepository.deleteById(basketId);
+    public Mono<Void> clearBasket(UUID basketId) {
+        return basketRepository.deleteById(basketId);
     }
 }

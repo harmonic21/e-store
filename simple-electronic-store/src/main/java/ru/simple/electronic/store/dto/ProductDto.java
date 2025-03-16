@@ -12,13 +12,9 @@ import java.util.UUID;
 @NoArgsConstructor
 public class ProductDto {
 
-    private String id;
+    private UUID id;
     private String title;
     private BigDecimal price;
     private String description;
     private String image;
-
-    public UUID getIdAsUuid() {
-        return UUID.fromString(id);
-    }
 }

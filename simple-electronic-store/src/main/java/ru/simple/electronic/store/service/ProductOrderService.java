@@ -1,16 +1,15 @@
 package ru.simple.electronic.store.service;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 import ru.simple.electronic.store.dto.ProductOrderDto;
 import ru.simple.electronic.store.entity.ProductOrderEntity;
 import ru.simple.electronic.store.mapper.ProductOrderMapper;
 import ru.simple.electronic.store.repository.ProductOrderRepository;
 
-import java.math.BigDecimal;
-import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -18,42 +17,54 @@ import java.util.UUID;
 public class ProductOrderService {
 
     private final ProductOrderRepository productOrderRepository;
+    private final BasketService basketService;
     private final ProductOrderMapper productOrderMapper;
 
     @Transactional
-    public ProductOrderDto findCurrentOrderOrCreateNew() {
-        return productOrderRepository.findProductOrderByStatus("NEW").blockOptional()
+    public Mono<ProductOrderDto> findCurrentOrderOrCreateNew() {
+        return productOrderRepository.findProductOrderByStatus("NEW")
+                .switchIfEmpty(createNewOrder())
                 .map(productOrderMapper::mapToDto)
-                .orElseGet(this::createNewOrder);
+                .flatMap(this::enrichOrderRelations);
     }
 
-    public List<ProductOrderDto> findAllOrdersInStatusDone() {
-        return productOrderRepository.findAllProductOrderByStatus("DONE").collectList().block().stream()
-                .map(productOrderMapper::mapToDto)
-                .toList();
+    private Mono<ProductOrderDto> enrichOrderRelations(ProductOrderDto orderDto) {
+        return Mono.just(orderDto.getId())
+                .flatMapMany(basketService::findAllBasketForOrder)
+                .collectList()
+                .doOnNext(orderDto::setOrderItems)
+                .thenReturn(orderDto);
+    }
+
+    public Flux<ProductOrderDto> findAllOrdersInStatusDone() {
+        return productOrderRepository.findAllProductOrderByStatus("DONE")
+                .map(productOrderMapper::mapToDto);
     }
 
     @Transactional
-    public void placeAnOrder() {
-        productOrderRepository.findProductOrderByStatus("NEW").blockOptional()
-                .ifPresent(order -> {
-                    var totalOrderSum = CollectionUtils.emptyIfNull(order.getOrderItems()).stream()
-                            .map(basket -> basket.getProduct().getPrice().multiply(BigDecimal.valueOf(basket.getProductCount())))
-                            .reduce(BigDecimal::add)
-                            .orElse(BigDecimal.ZERO);
-                    order.setOrderSum(totalOrderSum);
-                    order.setStatus("DONE");
-                    productOrderRepository.save(order);
-                });
+    public Mono<Void> placeAnOrder() {
+        return productOrderRepository.findProductOrderByStatus("NEW")
+                .flatMap(this::calculateTotalSumAndMap)
+                .doOnNext(order -> order.setStatus("DONE"))
+                .flatMap(productOrderRepository::save)
+                .then();
     }
 
-    public ProductOrderDto getDetailInfoById(UUID id) {
-        return productOrderRepository.findById(id).map(productOrderMapper::mapToDto).blockOptional().orElse(null);
+    private Mono<ProductOrderEntity> calculateTotalSumAndMap(ProductOrderEntity productOrder) {
+        return Mono.just(productOrder.getId())
+                .flatMap(productOrderRepository::calculateTotalOrderSum)
+                .map(productOrder::withOrderSum);
     }
 
-    private ProductOrderDto createNewOrder() {
-        ProductOrderEntity orderEntity = new ProductOrderEntity();
+    public Mono<ProductOrderDto> getDetailInfoById(UUID id) {
+        return productOrderRepository.findById(id)
+                .map(productOrderMapper::mapToDto)
+                .flatMap(this::enrichOrderRelations);
+    }
+
+    private Mono<ProductOrderEntity> createNewOrder() {
+        ProductOrderEntity orderEntity = new ProductOrderEntity().withId(UUID.randomUUID());
         orderEntity.setStatus("NEW");
-        return productOrderMapper.mapToDto(productOrderRepository.save(orderEntity).block());
+        return productOrderRepository.save(orderEntity);
     }
 }
