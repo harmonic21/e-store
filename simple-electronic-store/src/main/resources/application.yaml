@@ -7,9 +7,9 @@ spring:
   thymeleaf:
     encoding: UTF-8
   r2dbc:
-    url: r2dbc:h2:file:///~/web_blog-h2-db;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALS;
-    username: sa
-    password:
+    url: r2dbc:postgresql://localhost:5432/yandex_practicum
+    username: estore_user
+    password: changeit
   jpa:
     hibernate:
       ddl-auto: none

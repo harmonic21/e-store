@@ -13,7 +13,6 @@ import ru.simple.electronic.store.entity.ProductOrderEntity;
 import ru.simple.electronic.store.mapper.BasketMapper;
 import ru.simple.electronic.store.repository.BasketRepository;
 import ru.simple.electronic.store.repository.ProductOrderRepository;
-import ru.simple.electronic.store.repository.ProductRepository;
 
 import java.util.UUID;
 
@@ -23,7 +22,6 @@ import java.util.UUID;
 public class BasketService {
 
     private final BasketRepository basketRepository;
-    private final ProductRepository productRepository;
     private final ProductService productService;
     private final ProductOrderRepository productOrderRepository;
 
@@ -39,10 +37,6 @@ public class BasketService {
     private Mono<Tuple2<BasketEntity, ProductDto>> enrichProductInfo(BasketEntity basketEntity) {
         return Mono.just(basketEntity)
                 .zipWith(productService.findById(basketEntity.getProductId()));
-    }
-
-    public BasketDto findBasketForProduct(UUID productId, UUID orderId) {
-        return basketMapper.mapToDto(basketRepository.findByProductIdAndOrderId(productId, orderId).block());
     }
 
     @Transactional

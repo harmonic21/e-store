@@ -45,7 +45,7 @@ public class OrderController {
 
     @PutMapping("/place")
     @ResponseBody
-    public Mono<Void> placeAnOrder() {
+    public Mono<UUID> placeAnOrder() {
         return productOrderService.placeAnOrder();
     }
 

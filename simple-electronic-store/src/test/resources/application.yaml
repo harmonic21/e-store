@@ -1,8 +1,12 @@
+logging:
+  level:
+    org:
+      springframework:
+        r2dbc: TRACE
 spring:
-  jpa:
-    show-sql: true
-  datasource:
-    url: r2dbc:h2:mem:web_blog;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALS;INIT=RUNSCRIPT FROM 'classpath:schema.sql'
-    driver-class-name: org.h2.Driver
-    username: sa
-    password:
+  thymeleaf:
+    encoding: UTF-8
+  r2dbc:
+    url: ${CONTAINER.URL}
+    username: ${CONTAINER.USERNAME}
+    password: ${CONTAINER.PASSWORD}

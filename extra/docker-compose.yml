@@ -1,0 +1,26 @@
+version: "3.9"
+services:
+  e-store:
+    image: openjdk:21-oracle
+    depends_on:
+      - db
+    environment:
+      SPRING_CONFIG_LOCATION: /app/config/application.yaml
+    volumes:
+      - ../simple-electronic-store/target:/app
+      - ./startup-config:/app/config
+    ports:
+      - "8080:8080"
+    command: java -jar /app/simple-electronic-store.jar
+    links:
+      - "db:postgredb"
+  db:
+    image: postgres:13.3
+    environment:
+      POSTGRES_USER: estore_user
+      POSTGRES_PASSWORD: changeit
+      POSTGRES_DB: yandex_practicum
+    volumes:
+      - ./db-scripts:/docker-entrypoint-initdb.d
+    ports:
+      - "5432:5432"

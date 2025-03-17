@@ -7,6 +7,7 @@ import org.apache.commons.collections4.CollectionUtils;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 @Data
@@ -24,5 +25,12 @@ public class ProductOrderDto {
                 .map(basket -> basket.getProductInfo().getPrice().multiply(BigDecimal.valueOf(basket.getProductCount())))
                 .reduce(BigDecimal::add)
                 .orElse(BigDecimal.ZERO);
+    }
+
+    public BasketDto getBasketForProduct(UUID productId) {
+        return CollectionUtils.emptyIfNull(orderItems).stream()
+                .filter(basket -> Objects.equals(basket.getProductInfo().getId(), productId))
+                .findFirst()
+                .orElse(null);
     }
 }

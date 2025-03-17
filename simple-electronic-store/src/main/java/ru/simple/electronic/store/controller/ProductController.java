@@ -19,8 +19,6 @@ import java.io.SequenceInputStream;
 import java.util.Collections;
 import java.util.Objects;
 import java.util.UUID;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 @Controller
 @RequiredArgsConstructor
@@ -48,14 +46,11 @@ public class ProductController {
                 pageNum, pageSize, keyWord, priceSortAsc, abcSortAsc, priceSortDesc, abcSortDesc
         );
         var currentOrder = productOrderService.findCurrentOrderOrCreateNew();
-        var currentBasketByProductId = currentOrder.map(ProductOrderDto::getOrderItems)
-                .map(baskets -> baskets.stream().collect(Collectors.toMap(basket -> basket.getProductInfo().getId(), Function.identity())));
 
         return Mono.defer(() ->
             Mono.just(Rendering.view("products")
                     .modelAttribute("products", allProducts)
                     .modelAttribute("order", currentOrder)
-                    .modelAttribute("basket", currentBasketByProductId)
                     .modelAttribute("currentPageNum", pageNum)
                     .modelAttribute("currentPageSize", pageSize)
                     .modelAttribute("currentKeyWord", keyWord)
@@ -92,13 +87,12 @@ public class ProductController {
     }
 
     @PostMapping("/product/upload")
-    public String uploadProduct(@RequestPart("file") FilePart csvFile) throws IOException {
+    public Mono<Rendering> uploadProduct(@RequestPart("file") FilePart csvFile) throws IOException {
         var csvContent = csvFile.content().map(DataBuffer::asInputStream)
                 .collectList()
                 .map(Collections::enumeration)
                 .map(SequenceInputStream::new)
                 .flatMapMany(csvReaderService::readCsv);
-        productService.saveNewProduct(csvContent).subscribe();
-        return "redirect:/";
+        return productService.saveNewProduct(csvContent).then(Mono.just(Rendering.redirectTo("/").build()));
     }
 }

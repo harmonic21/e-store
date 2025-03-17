@@ -49,8 +49,8 @@
     </div>
     <br>
     <button th:onclick="addProductToBasket([[${product.id}]])">+</button>
-    <p th:id="${product.id} + '_count'" th:text="${basket.get(product.id)?.productCount?:'0'}" style="text-align: center"></p>
-    <button th:onclick="deleteProductFromBasket([[${product.id}]],[[${basket.get(product.id)?.id}]])">-</button>
+    <p th:id="${product.id} + '_count'" th:text="${order.getBasketForProduct(product.id)?.productCount?:'0'}" style="text-align: center"></p>
+    <button th:onclick="deleteProductFromBasket([[${product.id}]],[[${order.getBasketForProduct(product.id)?.id}]])">-</button>
 </div>
 <br>
 <br>

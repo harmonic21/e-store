@@ -42,18 +42,19 @@ public class ProductOrderService {
     }
 
     @Transactional
-    public Mono<Void> placeAnOrder() {
+    public Mono<UUID> placeAnOrder() {
         return productOrderRepository.findProductOrderByStatus("NEW")
-                .flatMap(this::calculateTotalSumAndMap)
                 .doOnNext(order -> order.setStatus("DONE"))
+                .flatMap(this::calculateTotalSumAndMap)
                 .flatMap(productOrderRepository::save)
-                .then();
+                .map(ProductOrderEntity::getId);
     }
 
     private Mono<ProductOrderEntity> calculateTotalSumAndMap(ProductOrderEntity productOrder) {
         return Mono.just(productOrder.getId())
                 .flatMap(productOrderRepository::calculateTotalOrderSum)
-                .map(productOrder::withOrderSum);
+                .map(productOrder::withOrderSum)
+                .defaultIfEmpty(productOrder);
     }
 
     public Mono<ProductOrderDto> getDetailInfoById(UUID id) {
