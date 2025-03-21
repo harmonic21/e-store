@@ -17,20 +17,15 @@
 
   <properties>
     <org.mapstruct.version>1.5.5.Final</org.mapstruct.version>
-    <r2dbc-spi.version>1.0.0.RELEASE</r2dbc-spi.version>
-    <r2dbc-h2.version>1.0.0.RELEASE</r2dbc-h2.version>
-    <reactive-streams.version>1.0.4</reactive-streams.version>
+    <commons-collections4.version>4.4</commons-collections4.version>
+    <commons-lang.version>2.4</commons-lang.version>
   </properties>
 
   <dependencies>
+    <!--  SPRING  -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-webflux</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.hibernate.reactive</groupId>
-      <artifactId>hibernate-reactive-core</artifactId>
-      <version>2.4.2.Final</version>
     </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>
@@ -44,16 +39,15 @@
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-thymeleaf</artifactId>
     </dependency>
-
+    <!--  R2DBC  -->
     <dependency>
-      <groupId>commons-lang</groupId>
-      <artifactId>commons-lang</artifactId>
-      <version>2.4</version>
+      <groupId>org.hibernate.reactive</groupId>
+      <artifactId>hibernate-reactive-core</artifactId>
+      <version>2.4.2.Final</version>
     </dependency>
     <dependency>
       <groupId>io.r2dbc</groupId>
       <artifactId>r2dbc-spi</artifactId>
-      <version>${r2dbc-spi.version}</version>
     </dependency>
     <dependency>
       <groupId>io.r2dbc</groupId>
@@ -62,6 +56,42 @@
     <dependency>
       <groupId>org.postgresql</groupId>
       <artifactId>r2dbc-postgresql</artifactId>
+    </dependency>
+<!--    <dependency>-->
+<!--      <groupId>org.reactivestreams</groupId>-->
+<!--      <artifactId>reactive-streams</artifactId>-->
+<!--      <version>${reactive-streams.version}</version>-->
+<!--    </dependency>-->
+    <!--  UTIL  -->
+    <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>commons-lang</groupId>
+      <artifactId>commons-lang</artifactId>
+      <version>${commons-lang.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-collections4</artifactId>
+      <version>${commons-collections4.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.mapstruct</groupId>
+      <artifactId>mapstruct</artifactId>
+      <version>${org.mapstruct.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.dataformat</groupId>
+      <artifactId>jackson-dataformat-csv</artifactId>
+    </dependency>
+    <!--  TEST  -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-test</artifactId>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.testcontainers</groupId>
@@ -76,35 +106,6 @@
     <dependency>
       <groupId>org.testcontainers</groupId>
       <artifactId>junit-jupiter</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.reactivestreams</groupId>
-      <artifactId>reactive-streams</artifactId>
-      <version>${reactive-streams.version}</version>
-    </dependency>
-
-    <dependency>
-      <groupId>org.projectlombok</groupId>
-      <artifactId>lombok</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.commons</groupId>
-      <artifactId>commons-collections4</artifactId>
-      <version>4.4</version>
-    </dependency>
-    <dependency>
-      <groupId>org.mapstruct</groupId>
-      <artifactId>mapstruct</artifactId>
-      <version>${org.mapstruct.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.fasterxml.jackson.dataformat</groupId>
-      <artifactId>jackson-dataformat-csv</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-test</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>

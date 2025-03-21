@@ -14,22 +14,22 @@
 
 <h1>Витрина нашего магазина</h1>
 <br>
-<form method="GET" th:action="@{/products}">
+<form method="GET" th:action="@{/products}" th:object="${filtration}">
     <label for="page-num"><b>Номер страницы</b></label>
-    <input type="number" th:name="page-num" min="0" required="true" th:value="${currentPageNum}"/>
+    <input type="number" th:field="*{pageNum}" min="0" required="true" th:value="${filtration?.pageNum}"/>
     <label for="page-size"><b>Размер страницы</b></label>
-    <input type="number" th:name="page-size" min="0" required="true" th:value="${currentPageSize}" />
+    <input type="number" th:field="*{pageSize}" min="0" required="true" th:value="${filtration?.pageSize}"/>
     <label for="key-word"><b>Фильтр по названию</b></label>
-    <input type="text" th:name="key-word" th:value="${currentKeyWord}"/>
+    <input type="text" th:field="*{keyWord}" th:value="${filtration?.keyWord}"/>
     <br>
     <label for="price-sort-asc"><b>Сортировка по цене возрастающая</b></label>
-    <input type="checkbox" th:name="price-sort-asc"/>
+    <input type="checkbox" th:field="*{priceSortAsc}"/>
     <label for="abc-sort-asc"><b>Сортировка алфавиту возрастающая</b></label>
-    <input type="checkbox" th:name="abc-sort-asc"/>
+    <input type="checkbox" th:field="*{abcSortAsc}"/>
     <label for="price-sort-desc"><b>Сортировка по цене убывающая</b></label>
-    <input type="checkbox" th:name="price-sort-desc"/>
+    <input type="checkbox" th:field="*{priceSortDesc}"/>
     <label for="abc-sort-desc"><b>Сортировка алфавиту убывающая</b></label>
-    <input type="checkbox" th:name="abc-sort-desc"/>
+    <input type="checkbox" th:field="*{abcSortDesc}"/>
     <br>
     <button>Обновить</button>
 </form>

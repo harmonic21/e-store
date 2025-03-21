@@ -1,12 +1,10 @@
 package ru.simple.electronic.store.service;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import reactor.core.publisher.Mono;
-import ru.simple.electronic.store.base.SpringBootApplicationTest;
 import ru.simple.electronic.store.dto.ProductOrderDto;
 import ru.simple.electronic.store.entity.ProductOrderEntity;
 import ru.simple.electronic.store.repository.ProductOrderRepository;
@@ -16,7 +14,10 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class ProductOrderServiceTest extends SpringBootApplicationTest {
+@SpringBootTest
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+class ProductOrderServiceTest {
 
     @Autowired
     private ProductOrderService productOrderService;

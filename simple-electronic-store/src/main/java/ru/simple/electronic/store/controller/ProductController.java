@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.reactive.result.view.Rendering;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import ru.simple.electronic.store.dto.FiltrationDto;
 import ru.simple.electronic.store.dto.ProductOrderDto;
 import ru.simple.electronic.store.service.CsvReaderService;
 import ru.simple.electronic.store.service.ProductOrderService;
@@ -35,26 +36,16 @@ public class ProductController {
 
     @GetMapping("/products")
     public Mono<Rendering> getProducts(Model model,
-                                       @RequestParam(required = false, defaultValue = "10", name = "page-size") Integer pageSize,
-                                       @RequestParam(required = false, defaultValue = "0", name = "page-num") Integer pageNum,
-                                       @RequestParam(required = false, name = "key-word") String keyWord,
-                                       @RequestParam(required = false, name = "price-sort-asc") Boolean priceSortAsc,
-                                       @RequestParam(required = false, name = "abc-sort-asc") Boolean abcSortAsc,
-                                       @RequestParam(required = false, name = "price-sort-desc") Boolean priceSortDesc,
-                                       @RequestParam(required = false, name = "abc-sort-desc") Boolean abcSortDesc) {
-        var allProducts = productService.findAll(
-                pageNum, pageSize, keyWord, priceSortAsc, abcSortAsc, priceSortDesc, abcSortDesc
-        );
+                                       @ModelAttribute(value = "filtration") FiltrationDto filtrationDto) {
+        var allProducts = productService.findAll(filtrationDto);
         var currentOrder = productOrderService.findCurrentOrderOrCreateNew();
 
         return Mono.defer(() ->
-            Mono.just(Rendering.view("products")
-                    .modelAttribute("products", allProducts)
-                    .modelAttribute("order", currentOrder)
-                    .modelAttribute("currentPageNum", pageNum)
-                    .modelAttribute("currentPageSize", pageSize)
-                    .modelAttribute("currentKeyWord", keyWord)
-            )
+                Mono.just(Rendering.view("products")
+                        .modelAttribute("products", allProducts)
+                        .modelAttribute("order", currentOrder)
+                        .modelAttribute("filtration", filtrationDto)
+                )
         ).map(Rendering.Builder::build);
     }
 

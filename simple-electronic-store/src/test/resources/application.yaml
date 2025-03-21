@@ -7,6 +7,6 @@ spring:
   thymeleaf:
     encoding: UTF-8
   r2dbc:
-    url: ${CONTAINER.URL}
-    username: ${CONTAINER.USERNAME}
-    password: ${CONTAINER.PASSWORD}
+    url: ${CONTAINER.URL:r2dbc:postgresql://localhost:5432/yandex_practicum}
+    username: ${CONTAINER.USERNAME:sa}
+    password: ${CONTAINER.PASSWORD:}

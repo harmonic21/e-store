@@ -1,6 +1,7 @@
 package ru.simple.electronic.store.service;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.r2dbc.core.R2dbcEntityTemplate;
@@ -9,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import ru.simple.electronic.store.dto.FiltrationDto;
 import ru.simple.electronic.store.dto.ProductDto;
 import ru.simple.electronic.store.mapper.ProductMapper;
 import ru.simple.electronic.store.repository.ProductRepository;
@@ -27,31 +29,24 @@ public class ProductService {
 
     private final ProductRepository productRepository;
     private final ProductMapper productMapper;
-    private final R2dbcEntityTemplate r2dbcEntityTemplate;
 
-    public Mono<List<ProductDto>> findAll(Integer pageNum,
-                                    Integer pageSize,
-                                    String keyWord,
-                                    Boolean priceSortAsc,
-                                    Boolean abcSortAsc,
-                                    Boolean priceSortDesc,
-                                    Boolean abcSortDesc) {
-        Sort sort = applySort(priceSortAsc, abcSortAsc, priceSortDesc, abcSortDesc);
+    public Mono<List<ProductDto>> findAll(FiltrationDto filtrationDto) {
+        Sort sort = applySort(filtrationDto);
         Mono<List<ProductDto>> productList;
-        if (StringUtils.isNotBlank(keyWord)) {
+        if (StringUtils.isNotBlank(filtrationDto.getKeyWord())) {
             productList = productRepository.findByTitleLikeOrDescriptionLike(
-                            LIKE_QUERY_TEMPLATE.formatted(keyWord),
-                            LIKE_QUERY_TEMPLATE.formatted(keyWord),
+                            LIKE_QUERY_TEMPLATE.formatted(filtrationDto.getKeyWord()),
+                            LIKE_QUERY_TEMPLATE.formatted(filtrationDto.getKeyWord()),
                             sort
                     )
-                    .skip(pageNum.longValue() * pageSize)
-                    .take(pageSize)
+                    .skip(filtrationDto.getPageNum().longValue() * filtrationDto.getPageSize())
+                    .take(filtrationDto.getPageSize())
                     .map(productMapper::mapToProductDto)
                     .collectList();
         } else {
             productList = productRepository.findAll(sort)
-                    .skip(pageNum.longValue() * pageSize)
-                    .take(pageSize)
+                    .skip(filtrationDto.getPageNum().longValue() * filtrationDto.getPageSize())
+                    .take(filtrationDto.getPageSize())
                     .map(productMapper::mapToProductDto)
                     .collectList();
         }
@@ -79,22 +74,19 @@ public class ProductService {
         }
     }
 
-    private Sort applySort(Boolean priceSortAsc,
-                           Boolean abcSortAsc,
-                           Boolean priceSortDesc,
-                           Boolean abcSortDesc) {
+    private Sort applySort(FiltrationDto filtrationDto) {
         List<Sort.Order> orders = new ArrayList<>();
 
-        if (Objects.nonNull(priceSortAsc)) {
+        if (BooleanUtils.isTrue(filtrationDto.isPriceSortAsc())) {
             orders.add(Sort.Order.asc("price"));
         }
-        if (Objects.nonNull(abcSortAsc)) {
+        if (BooleanUtils.isTrue(filtrationDto.isAbcSortAsc())) {
             orders.add(Sort.Order.asc("title"));
         }
-        if (Objects.nonNull(priceSortDesc)) {
+        if (BooleanUtils.isTrue(filtrationDto.isPriceSortDesc())) {
             orders.add(Sort.Order.desc("price"));
         }
-        if (Objects.nonNull(abcSortDesc)) {
+        if (BooleanUtils.isTrue(filtrationDto.isAbcSortDesc())) {
             orders.add(Sort.Order.desc("title"));
         }
         return Sort.by(orders);

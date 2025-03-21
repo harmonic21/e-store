@@ -3,7 +3,6 @@ package ru.simple.electronic.store.controller;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.MediaType;
@@ -23,13 +22,14 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
 @AutoConfigureWebTestClient
-@AutoConfigureMockMvc
 class ProductControllerTest {
 
     @Autowired
@@ -57,9 +57,7 @@ class ProductControllerTest {
 
     @Test
     void getProductsTest() throws Exception {
-        when(productService.findAll(
-                any(), any(), any(), any(), any(), any(), any())
-        ).thenReturn(Mono.just(List.of()));
+        when(productService.findAll(any())).thenReturn(Mono.just(List.of()));
         when(productOrderService.findCurrentOrderOrCreateNew()).thenReturn(Mono.just(new ProductOrderDto()));
 
         webTestClient.get()
@@ -67,17 +65,12 @@ class ProductControllerTest {
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody(String.class)
-                .returnResult();
-
-
-//        mvc.perform(get("/products").param("key-word", "key"))
-//                .andExpect(status().isOk())
-//                .andExpect(model().attributeExists("products"))
-//                .andExpect(model().attributeExists("order"))
-//                .andExpect(model().attributeExists("basket"))
-//                .andExpect(model().attribute("currentPageNum", 0))
-//                .andExpect(model().attribute("currentPageSize", 10))
-//                .andExpect(model().attributeExists("currentKeyWord"));
+                .consumeWith(result -> {
+                    String renderedHtml = result.getResponseBody();
+                    assertTrue(renderedHtml.contains("<input type=\"number\" min=\"0\" required=\"true\" value=\"0\" id=\"pageNum\" name=\"pageNum\"/>"));
+                    assertTrue(renderedHtml.contains("<input type=\"number\" min=\"0\" required=\"true\" value=\"10\" id=\"pageSize\" name=\"pageSize\"/>"));
+                    assertFalse(renderedHtml.contains("<div>"));
+                });
     }
 
     @Test
@@ -101,13 +94,10 @@ class ProductControllerTest {
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody(String.class)
-                .returnResult();
-
-//        mvc.perform(get("/product/019fed39-d868-4e59-9093-1b2f83db2154"))
-//                .andExpect(status().isOk())
-//                .andExpect(model().attributeExists("product", "order", "basket"))
-//                .andExpect(model().attribute("product", product))
-//                .andExpect(model().attribute("order", productOrderDto));
+                .consumeWith(result ->{
+                    String renderedHtml = result.getResponseBody();
+                    assertTrue(renderedHtml.contains("<p id=\"019fed39-d868-4e59-9093-1b2f83db2154_count\">0</p>"));
+                });
     }
 
     @Test
@@ -128,11 +118,5 @@ class ProductControllerTest {
                 .location("/")
                 .expectBody()
                 .isEmpty();
-
-
-//        mvc.perform(multipart("/product/upload")
-//                .file(new MockMultipartFile("file", new byte[]{})))
-//                .andExpect(status().is3xxRedirection())
-//                .andExpect(redirectedUrl("/"));
     }
 }
