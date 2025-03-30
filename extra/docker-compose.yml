@@ -5,6 +5,7 @@ services:
     depends_on:
       - db
       - payment-service
+      - redis
     environment:
       SPRING_CONFIG_LOCATION: /app/config/application.yaml
     volumes:
@@ -16,6 +17,7 @@ services:
     links:
       - "db:postgredb"
       - "payment-service:payment"
+      - "redis:redis"
   payment-service:
     image: openjdk:21-oracle
     volumes:
@@ -33,3 +35,11 @@ services:
       - ./db-scripts:/docker-entrypoint-initdb.d
     ports:
       - "5432:5432"
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+    environment:
+      REDIS_PASSWORD: 123456
+      REDIS_PORT: 6379
+      REDIS_DATABASE: 1

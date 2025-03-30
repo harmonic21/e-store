@@ -17,3 +17,7 @@ spring:
 client:
   payment-service:
     url: http://localhost:8090
+redis:
+  hostname: localhost
+  port: 6379
+  minute-expire: 1

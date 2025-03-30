@@ -8,3 +8,7 @@ spring:
 client:
   payment-service:
     url: http://payment:8090
+redis:
+  hostname: redis
+  port: 6379
+  minute-expire: 5

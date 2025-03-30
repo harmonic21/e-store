@@ -37,6 +37,10 @@
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-thymeleaf</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-data-redis-reactive</artifactId>
+    </dependency>
     <!--  R2DBC  -->
     <dependency>
       <groupId>org.hibernate.reactive</groupId>
@@ -55,11 +59,6 @@
       <groupId>org.postgresql</groupId>
       <artifactId>r2dbc-postgresql</artifactId>
     </dependency>
-<!--    <dependency>-->
-<!--      <groupId>org.reactivestreams</groupId>-->
-<!--      <artifactId>reactive-streams</artifactId>-->
-<!--      <version>${reactive-streams.version}</version>-->
-<!--    </dependency>-->
     <!--  UTIL  -->
     <dependency>
       <groupId>org.projectlombok</groupId>
@@ -163,6 +162,7 @@
               <generateSupportingFiles>true</generateSupportingFiles>
               <generateApiDocumentation>false</generateApiDocumentation>
               <generateApiTests>false</generateApiTests>
+              <generateModelTests>false</generateModelTests>
               <generateApis>true</generateApis>
               <supportingFilesToGenerate>
                 ApiClient.java,JavaTimeFormatter.java,Authentication.java,HttpBasicAuth.java,HttpBearerAuth.java,ApiKeyAuth.java,RFC3339DateFormat.java
