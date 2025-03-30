@@ -5,3 +5,6 @@ spring:
     url: r2dbc:postgresql://postgredb:5432/yandex_practicum
     username: estore_user
     password: changeit
+client:
+  payment-service:
+    url: http://payment:8090

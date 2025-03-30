@@ -5,7 +5,7 @@
     <meta charset=utf-8>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
-<body>
+<body onload="checkPaymentAvailable()">
 
 <a th:href="@{/}">Домой</a>
 
@@ -28,9 +28,12 @@
     <button th:onclick="clearBasket([[${orderItem.productInfo.id}]],[[${orderItem.id}]])">Удалить товар из корзины</button>
 </div>
 
-<p th:text="'Общая сумма заказа: ' + ${order.getCurrentSum()}"></p>
+<p>
+<p th:text="'Общая сумма заказа: '"></p>
+<p id="current-order-sum" th:text="${order.getCurrentSum()}"></p>
+</p>
 
-<button th:onclick="placeAnOrder()">Оформить заказ</button>
+<button id="place-an-order-button" th:onclick="placeAnOrder()">Оформить заказ</button>
 
 <script type="text/javascript" th:src="@{/js/basket-func.js}"></script>
 </body>

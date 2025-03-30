@@ -8,6 +8,8 @@ import org.springframework.web.reactive.result.view.Rendering;
 import reactor.core.publisher.Mono;
 import ru.simple.electronic.store.dto.ProductOrderDto;
 import ru.simple.electronic.store.service.ProductOrderService;
+import ru.simple.store.payment.service.api.PaymentApi;
+import ru.simple.store.payment.service.model.PaymentPostRequest;
 
 import java.math.BigDecimal;
 import java.util.UUID;
@@ -18,6 +20,7 @@ import java.util.UUID;
 public class OrderController {
 
     private final ProductOrderService productOrderService;
+    private final PaymentApi paymentApi;
 
     @GetMapping("/current/info")
     public Mono<Rendering> getCurrentOrderInfo(Model model) {
@@ -45,8 +48,9 @@ public class OrderController {
 
     @PutMapping("/place")
     @ResponseBody
-    public Mono<UUID> placeAnOrder() {
-        return productOrderService.placeAnOrder();
+    public Mono<UUID> placeAnOrder(@RequestBody PaymentPostRequest paymentPostRequest) {
+        return paymentApi.paymentPostWithHttpInfo(paymentPostRequest)
+                .then(productOrderService.placeAnOrder());
     }
 
     @GetMapping("/detail/{id}")

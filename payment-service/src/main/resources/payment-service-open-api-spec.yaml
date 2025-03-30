@@ -1,0 +1,46 @@
+openapi: 3.1.0
+info:
+  title: Сервис платежей для электронного магазина
+  version: 1.0-SNAPSHOT
+servers:
+  - url: http://localhost:8090
+paths:
+  /balance:
+    get:
+      summary: Получение текущего баланса
+      description: Возвращает текущий баланс пользователя
+      tags:
+        - balance
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  amount:
+                    type: double
+                    description: Сумма денег на счете
+  /payment:
+    post:
+      summary: Осуществление платежа
+      description: Проверка соответствия суммы заказа текущему балансу
+      tags:
+        - payment
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - orderAmount
+              properties:
+                orderAmount:
+                  type: double
+                  description: Сумма текущего заказа
+      responses:
+        "200":
+          description: "OK"
+        "400":
+          description: "На счету не достаточно средств"

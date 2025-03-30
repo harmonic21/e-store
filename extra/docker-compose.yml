@@ -4,6 +4,7 @@ services:
     image: openjdk:21-oracle
     depends_on:
       - db
+      - payment-service
     environment:
       SPRING_CONFIG_LOCATION: /app/config/application.yaml
     volumes:
@@ -14,6 +15,14 @@ services:
     command: java -jar /app/simple-electronic-store.jar
     links:
       - "db:postgredb"
+      - "payment-service:payment"
+  payment-service:
+    image: openjdk:21-oracle
+    volumes:
+      - ../payment-service/target:/app
+    ports:
+      - "8090:8090"
+    command: java -jar /app/payment-service.jar
   db:
     image: postgres:13.3
     environment:
