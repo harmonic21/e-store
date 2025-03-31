@@ -46,10 +46,10 @@ public class ProductService {
     public Mono<Void> saveNewProduct(Flux<ProductDto> products) {
         var productEntities = products.map(productMapper::mapToProductEntity)
                 .map(productEntity -> productEntity.withId(UUID.randomUUID()));
-        return productRepository.saveAll(productEntities).then();
+        return productRepository.saveAll(productEntities).flatMap(ignore -> productRedisCacheService.refreshNow()).then();
     }
 
     public Mono<ProductDto> findById(UUID uuid) {
-        return productRepository.findById(uuid).map(productMapper::mapToProductDto);
+        return productRedisCacheService.getById(uuid).map(productMapper::mapToProductDto);
     }
 }

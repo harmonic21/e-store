@@ -10,3 +10,10 @@ spring:
     url: ${CONTAINER.URL:r2dbc:postgresql://localhost:5432/yandex_practicum}
     username: ${CONTAINER.USERNAME:sa}
     password: ${CONTAINER.PASSWORD:}
+client:
+  payment-service:
+    url: http://localhost:8080
+redis:
+  hostname:
+  port:
+  minute-expire: 1

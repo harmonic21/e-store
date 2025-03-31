@@ -8,12 +8,14 @@ import org.springframework.data.redis.core.ReactiveRedisTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 import ru.simple.electronic.store.dto.FiltrationDto;
 import ru.simple.electronic.store.entity.ProductEntity;
 import ru.simple.electronic.store.repository.ProductRepository;
 
 import java.time.Duration;
 import java.util.Comparator;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -31,15 +33,23 @@ public class ProductRedisCacheService {
 
     @Scheduled(fixedDelayString = "${redis.minute-expire}", timeUnit = TimeUnit.MINUTES)
     public void refresh() {
-        reactiveRedisConnectionFactory.getReactiveConnection().serverCommands().flushAll()
-                .thenMany(productRepository.findAll().flatMap(product -> redisTemplate.opsForValue().set(product.getId().toString(), product, Duration.ofMinutes(minuteExpire))))
-                .subscribe();
+        refreshNow().subscribe();
+    }
+
+    public Flux<ProductEntity> refreshNow() {
+        return reactiveRedisConnectionFactory.getReactiveConnection().serverCommands().flushAll()
+                .thenMany(productRepository.findAll().flatMap(this::putToCache));
     }
 
     public Flux<ProductEntity> getAll(FiltrationDto filtrationDto) {
         return redisTemplate.keys("*")
                 .flatMap(id -> redisTemplate.opsForValue().get(id))
                 .sort(createComparator(filtrationDto));
+    }
+
+    public Mono<ProductEntity> getById(UUID uuid) {
+        return redisTemplate.opsForValue().get(uuid.toString())
+                .switchIfEmpty(productRepository.findById(uuid).flatMap(this::putToCache));
     }
 
     private Comparator<ProductEntity> createComparator(FiltrationDto filtrationDto) {
@@ -57,5 +67,11 @@ public class ProductRedisCacheService {
             comparator = comparator.thenComparing(ProductEntity::getTitle, Comparator.reverseOrder());
         }
         return comparator;
+    }
+
+    private Mono<ProductEntity> putToCache(ProductEntity product) {
+        return redisTemplate.opsForValue()
+                .set(product.getId().toString(), product, Duration.ofMinutes(minuteExpire))
+                .then(Mono.just(product));
     }
 }
