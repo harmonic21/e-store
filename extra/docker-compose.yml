@@ -43,3 +43,22 @@ services:
       REDIS_PASSWORD: 123456
       REDIS_PORT: 6379
       REDIS_DATABASE: 1
+#  keycloack:
+#    image: quay.io/keycloak/keycloak:latest
+#    command:
+#      - start-dev
+#    environment:
+#      DB_VENDOR: POSTGRES
+#      DB_ADDR: postgredb
+#      DB_DATABASE: yandex_practicum
+#      DB_SCHEMA: public
+#      DB_USER: estore_user
+#      DB_PASSWORD: changeit
+#      KEYCLOAK_ADMIN: admin
+#      KEYCLOAK_ADMIN_PASSWORD: admin
+#    links:
+#      - "db:postgredb"
+#    ports:
+#      - "9090:8080"
+#    depends_on:
+#      - db

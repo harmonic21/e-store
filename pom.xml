@@ -16,5 +16,6 @@
   <modules>
     <module>simple-electronic-store</module>
     <module>payment-service</module>
+    <module>authorization-server</module>
   </modules>
 </project>

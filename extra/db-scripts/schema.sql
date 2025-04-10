@@ -1,3 +1,10 @@
+CREATE TABLE IF NOT EXISTS e_store_user (
+    id UUID PRIMARY KEY,
+    username varchar(255) NOT NULL,
+    password text NOT NULL,
+    roles varchar[]
+);
+
 CREATE TABLE IF NOT EXISTS product (
     id UUID PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
