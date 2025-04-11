@@ -20,7 +20,11 @@ public class SecurityConfiguration {
 
     @Bean
     public SecurityWebFilterChain securityFilterChain(ServerHttpSecurity http) throws Exception {
-        http.authorizeExchange(auth -> auth.anyExchange().permitAll())
+        http
+                .authorizeExchange(auth -> auth
+                        .pathMatchers("/product/upload").hasRole("ADMIN")
+                        .anyExchange().permitAll().and().anonymous()
+                )
                 .csrf(ServerHttpSecurity.CsrfSpec::disable)
                 .formLogin(Customizer.withDefaults());
         return http.build();
