@@ -40,8 +40,8 @@ public class BasketService {
     }
 
     @Transactional
-    public Mono<UUID> addProduct(UUID productId) {
-        return productOrderRepository.findProductOrderByStatus("NEW")
+    public Mono<UUID> addProduct(UUID productId, String username) {
+        return productOrderRepository.findProductOrderByStatusAndUsername("NEW", username)
                 .switchIfEmpty(createNewOrder())
                 .flatMap(order -> addProductToBasketForCurrentOrder(productId, order));
     }

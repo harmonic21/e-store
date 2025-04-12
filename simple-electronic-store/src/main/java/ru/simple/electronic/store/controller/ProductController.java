@@ -3,6 +3,7 @@ package ru.simple.electronic.store.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.http.codec.multipart.FilePart;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -36,9 +37,12 @@ public class ProductController {
 
     @GetMapping("/products")
     public Mono<Rendering> getProducts(Model model,
-                                       @ModelAttribute(value = "filtration") FiltrationDto filtrationDto) {
+                                       @ModelAttribute(value = "filtration") FiltrationDto filtrationDto,
+                                       Authentication authentication) {
         var allProducts = productService.findAll(filtrationDto);
-        var currentOrder = productOrderService.findCurrentOrderOrCreateNew();
+        Mono<ProductOrderDto> currentOrder = authentication != null && authentication.isAuthenticated() ?
+                productOrderService.findCurrentOrderOrCreateNew(authentication.getName()) :
+                Mono.empty();
 
         return Mono.defer(() ->
                 Mono.just(Rendering.view("products")
@@ -51,9 +55,12 @@ public class ProductController {
 
     @GetMapping("/product/{id}")
     public Mono<Rendering> getProductById(@PathVariable("id") UUID productId,
+                                          Authentication authentication,
                                           Model model) {
         var product = productService.findById(productId);
-        var currentOrder = productOrderService.findCurrentOrderOrCreateNew();
+        Mono<ProductOrderDto> currentOrder = authentication != null && authentication.isAuthenticated() ?
+                productOrderService.findCurrentOrderOrCreateNew(authentication.getName()) :
+                Mono.empty();
         var basketForProduct = currentOrder.map(ProductOrderDto::getOrderItems)
                 .flatMapMany(Flux::fromIterable)
                 .filter(basketDto -> Objects.equals(basketDto.getProductInfo().getId(), productId))

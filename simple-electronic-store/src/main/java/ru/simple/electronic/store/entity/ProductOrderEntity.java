@@ -25,6 +25,8 @@ public class ProductOrderEntity implements Persistable<UUID> {
     private BigDecimal orderSum = BigDecimal.ZERO;
     @Column(value = "status")
     private String status;
+    @Column(value = "username")
+    private String username;
 
     @Transient
     private boolean isNew = false;

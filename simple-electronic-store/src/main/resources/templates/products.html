@@ -11,14 +11,14 @@
 <a th:href="@{/order/current/info}"><i class="fa fa-shopping-cart" style="font-size:36px; float: right"></i></a>
 <a th:href="@{/order/all}"><i class="fa fa-archive" style="font-size:36px; float: right"></i></a>
 <div>
-    <div th:if="${#authorization.expression('isAuthenticated()')}" style="float: right">
+    <div th:if="${#authentication?.principal?.username != null}" style="float: right">
         <i class="fa fa-address-card-o" style="font-size:36px"></i>
         <br>
-        <span th:text="${#authentication.principal.username}">Stub</span>
+        <span th:text="${#authentication?.principal?.username}">Stub</span>
         <br>
         <a th:href="@{/logout}" >Выйти</a>
     </div>
-    <div th:unless="${#authorization.expression('isAuthenticated()')}">
+    <div th:unless="${#authentication?.principal?.username != null}">
         <a th:href="@{/login}" style="float: right">Войти<i class="fa fa-address-card-o" style="font-size:36px; float: right"></i></a>
     </div>
 </div>
@@ -60,9 +60,11 @@
         <img th:src="'data:image/jpeg;base64,' + ${product.image}" alt="Image not loaded"/>
     </div>
     <br>
-    <button th:onclick="addProductToBasket([[${product.id}]])">+</button>
-    <p th:id="${product.id} + '_count'" th:text="${order.getBasketForProduct(product.id)?.productCount?:'0'}" style="text-align: center"></p>
-    <button th:onclick="deleteProductFromBasket([[${product.id}]],[[${order.getBasketForProduct(product.id)?.id}]])">-</button>
+    <div th:if="${#authentication?.principal?.username != null}">
+        <button th:onclick="addProductToBasket([[${product.id}]])">+</button>
+        <p th:id="${product.id} + '_count'" th:text="${order.getBasketForProduct(product.id)?.productCount?:'0'}" style="text-align: center"></p>
+        <button th:onclick="deleteProductFromBasket([[${product.id}]],[[${order.getBasketForProduct(product.id)?.id}]])">-</button>
+    </div>
 </div>
 <br>
 <br>

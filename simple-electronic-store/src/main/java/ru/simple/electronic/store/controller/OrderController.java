@@ -1,6 +1,7 @@
 package ru.simple.electronic.store.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -12,6 +13,7 @@ import ru.simple.store.payment.service.api.PaymentApi;
 import ru.simple.store.payment.service.model.PaymentPostRequest;
 
 import java.math.BigDecimal;
+import java.security.Principal;
 import java.util.UUID;
 
 @Controller
@@ -23,10 +25,11 @@ public class OrderController {
     private final PaymentApi paymentApi;
 
     @GetMapping("/current/info")
-    public Mono<Rendering> getCurrentOrderInfo(Model model) {
+    public Mono<Rendering> getCurrentOrderInfo(Model model,
+                                               @AuthenticationPrincipal Principal principal) {
         return Mono.just(
                 Rendering.view("order-basket-info")
-                        .modelAttribute("order", productOrderService.findCurrentOrderOrCreateNew())
+                        .modelAttribute("order", productOrderService.findCurrentOrderOrCreateNew(principal.getName()))
                         .build()
         );
     }
@@ -48,9 +51,10 @@ public class OrderController {
 
     @PutMapping("/place")
     @ResponseBody
-    public Mono<UUID> placeAnOrder(@RequestBody PaymentPostRequest paymentPostRequest) {
+    public Mono<UUID> placeAnOrder(@RequestBody PaymentPostRequest paymentPostRequest,
+                                   @AuthenticationPrincipal Principal principal) {
         return paymentApi.paymentPostWithHttpInfo(paymentPostRequest)
-                .then(productOrderService.placeAnOrder());
+                .then(productOrderService.placeAnOrder(principal.getName()));
     }
 
     @GetMapping("/detail/{id}")

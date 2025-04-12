@@ -14,7 +14,7 @@ import java.util.UUID;
 @Repository
 public interface ProductOrderRepository extends R2dbcRepository<ProductOrderEntity, UUID> {
 
-    Mono<ProductOrderEntity> findProductOrderByStatus(String status);
+    Mono<ProductOrderEntity> findProductOrderByStatusAndUsername(String status, String username);
     Flux<ProductOrderEntity> findAllProductOrderByStatus(String status);
 
     @Query(value = """

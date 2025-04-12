@@ -23,10 +23,11 @@ public class SecurityConfiguration {
         http
                 .authorizeExchange(auth -> auth
                         .pathMatchers("/product/upload").hasRole("ADMIN")
-                        .anyExchange().permitAll().and().anonymous()
+                        .anyExchange().permitAll()
                 )
                 .csrf(ServerHttpSecurity.CsrfSpec::disable)
-                .formLogin(Customizer.withDefaults());
+                .formLogin(Customizer.withDefaults())
+                .anonymous(ServerHttpSecurity.AnonymousSpec::disable);
         return http.build();
     }
 }

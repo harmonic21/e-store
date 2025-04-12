@@ -12,6 +12,18 @@
 
 <a th:href="@{/order/current/info}"><i class="fa fa-shopping-cart" style="font-size:36px; float: right"></i></a>
 <a th:href="@{/order/all}"><i class="fa fa-archive" style="font-size:36px; float: right"></i></a>
+<div>
+    <div th:if="${#authentication?.principal?.username != null}" style="float: right">
+        <i class="fa fa-address-card-o" style="font-size:36px"></i>
+        <br>
+        <span th:text="${#authentication?.principal?.username}">Stub</span>
+        <br>
+        <a th:href="@{/logout}" >Выйти</a>
+    </div>
+    <div th:unless="${#authentication?.principal?.username != null}">
+        <a th:href="@{/login}" style="float: right">Войти<i class="fa fa-address-card-o" style="font-size:36px; float: right"></i></a>
+    </div>
+</div>
 
 <h1 th:text="${product.title}"></h1>
 
@@ -23,11 +35,13 @@
 <div th:text="${product.description}"></div>
 <div th:utext="'<b>Цена:</b>' + ${product.price}"></div>
 <br>
-<button th:onclick="addProductToBasket([[${product.id}]])">+</button>
-<p th:id="${product.id} + '_count'" th:text="${basket?.productCount?:'0'}"></p>
-<button th:onclick="deleteProductFromBasket([[${product.id}]],[[${basket?.id}]])">-</button>
-<br>
-<button th:onclick="clearBasket([[${product.id}]],[[${basket?.id}]])">Удалить товар из корзины</button>
+<div th:if="${#authentication?.principal?.username != null}">
+    <button th:onclick="addProductToBasket([[${product.id}]])">+</button>
+    <p th:id="${product.id} + '_count'" th:text="${basket?.productCount?:'0'}"></p>
+    <button th:onclick="deleteProductFromBasket([[${product.id}]],[[${basket?.id}]])">-</button>
+    <br>
+    <button th:onclick="clearBasket([[${product.id}]],[[${basket?.id}]])">Удалить товар из корзины</button>
+</div>
 
 <br>
 <script type="text/javascript" th:src="@{/js/basket-func.js}"></script>

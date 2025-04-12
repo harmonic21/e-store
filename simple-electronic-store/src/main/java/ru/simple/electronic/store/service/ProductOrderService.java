@@ -21,9 +21,9 @@ public class ProductOrderService {
     private final ProductOrderMapper productOrderMapper;
 
     @Transactional
-    public Mono<ProductOrderDto> findCurrentOrderOrCreateNew() {
-        return productOrderRepository.findProductOrderByStatus("NEW")
-                .switchIfEmpty(createNewOrder())
+    public Mono<ProductOrderDto> findCurrentOrderOrCreateNew(String username) {
+        return productOrderRepository.findProductOrderByStatusAndUsername("NEW", username)
+                .switchIfEmpty(createNewOrder(username))
                 .map(productOrderMapper::mapToDto)
                 .flatMap(this::enrichOrderRelations);
     }
@@ -42,8 +42,8 @@ public class ProductOrderService {
     }
 
     @Transactional
-    public Mono<UUID> placeAnOrder() {
-        return productOrderRepository.findProductOrderByStatus("NEW")
+    public Mono<UUID> placeAnOrder(String username) {
+        return productOrderRepository.findProductOrderByStatusAndUsername("NEW", username)
                 .doOnNext(order -> order.setStatus("DONE"))
                 .flatMap(this::calculateTotalSumAndMap)
                 .flatMap(productOrderRepository::save)
@@ -63,9 +63,10 @@ public class ProductOrderService {
                 .flatMap(this::enrichOrderRelations);
     }
 
-    private Mono<ProductOrderEntity> createNewOrder() {
+    private Mono<ProductOrderEntity> createNewOrder(String username) {
         ProductOrderEntity orderEntity = new ProductOrderEntity().withId(UUID.randomUUID());
         orderEntity.setStatus("NEW");
+        orderEntity.setUsername(username);
         return productOrderRepository.save(orderEntity);
     }
 }
