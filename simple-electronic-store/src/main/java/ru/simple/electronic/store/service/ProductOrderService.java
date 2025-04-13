@@ -36,8 +36,8 @@ public class ProductOrderService {
                 .thenReturn(orderDto);
     }
 
-    public Flux<ProductOrderDto> findAllOrdersInStatusDone() {
-        return productOrderRepository.findAllProductOrderByStatus("DONE")
+    public Flux<ProductOrderDto> findAllOrdersInStatusDone(String username) {
+        return productOrderRepository.findAllProductOrderByStatusAndUsername("DONE", username)
                 .map(productOrderMapper::mapToDto);
     }
 

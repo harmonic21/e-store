@@ -1,6 +1,7 @@
 package ru.simple.electronic.store.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -9,7 +10,8 @@ import org.springframework.web.reactive.result.view.Rendering;
 import reactor.core.publisher.Mono;
 import ru.simple.electronic.store.dto.ProductOrderDto;
 import ru.simple.electronic.store.service.ProductOrderService;
-import ru.simple.store.payment.service.api.PaymentApi;
+import ru.simple.electronic.store.service.TokenService;
+import ru.simple.store.payment.service.ApiClient;
 import ru.simple.store.payment.service.model.PaymentPostRequest;
 
 import java.math.BigDecimal;
@@ -22,7 +24,8 @@ import java.util.UUID;
 public class OrderController {
 
     private final ProductOrderService productOrderService;
-    private final PaymentApi paymentApi;
+    private final TokenService tokenService;
+    private final ApiClient apiClient;
 
     @GetMapping("/current/info")
     public Mono<Rendering> getCurrentOrderInfo(Model model,
@@ -35,8 +38,9 @@ public class OrderController {
     }
 
     @GetMapping("/all")
-    public Mono<Rendering> getAllOrdersInStatusDone(Model model) {
-        var ordersInStatusDone = productOrderService.findAllOrdersInStatusDone();
+    public Mono<Rendering> getAllOrdersInStatusDone(Model model,
+                                                    @AuthenticationPrincipal Principal principal) {
+        var ordersInStatusDone = productOrderService.findAllOrdersInStatusDone(principal.getName());
         var totalOrdersSum = ordersInStatusDone
                 .map(ProductOrderDto::getOrderSum)
                 .reduce(BigDecimal::add)
@@ -53,7 +57,14 @@ public class OrderController {
     @ResponseBody
     public Mono<UUID> placeAnOrder(@RequestBody PaymentPostRequest paymentPostRequest,
                                    @AuthenticationPrincipal Principal principal) {
-        return paymentApi.paymentPostWithHttpInfo(paymentPostRequest)
+        return tokenService.getAccessToken()
+                .flatMap(accessToken -> apiClient.getWebClient().post()
+                        .uri(apiClient.getBasePath() + "/payment")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
+                        .bodyValue(paymentPostRequest)
+                        .retrieve()
+                        .toBodilessEntity()
+                )
                 .then(productOrderService.placeAnOrder(principal.getName()));
     }
 

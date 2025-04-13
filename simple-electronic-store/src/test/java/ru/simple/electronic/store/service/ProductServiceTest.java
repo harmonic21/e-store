@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.connection.ReactiveRedisConnectionFactory;
 import org.springframework.data.redis.core.ReactiveRedisTemplate;
+import org.springframework.security.oauth2.client.ReactiveOAuth2AuthorizedClientManager;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import reactor.core.publisher.Flux;
 import ru.simple.electronic.store.dto.ProductDto;
 import ru.simple.electronic.store.entity.ProductEntity;
@@ -30,6 +32,8 @@ class ProductServiceTest {
     private ReactiveRedisTemplate<String, ProductEntity> redisTemplate;
     @Autowired
     private ReactiveRedisConnectionFactory reactiveRedisConnectionFactory;
+    @MockitoBean
+    public ReactiveOAuth2AuthorizedClientManager manager;
 
     @Test
     @Order(1)

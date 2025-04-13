@@ -32,7 +32,7 @@ public class UserController {
 
     @PostMapping("/registration")
     public Mono<Rendering> registerNewUser(@ModelAttribute(name = "user") @Valid UserDto userDto) {
-        return userService.saveNewUser(userDto)
+        return userService.saveNewUser(userDto, "USER")
                 .then(Mono.just(Rendering.redirectTo("/").build()));
     }
 }

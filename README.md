@@ -1,6 +1,28 @@
 # e-store
 
 ## Сборка приложения
+
+## Версия приложения release_v4. Спринт 8
+### Нововведения:
+1. Добавлен сервис авторизации (Keycloak). Сервис связан с БД Postgresql
+2. Добавлен Spring Security. Анонимный пользователь может лишь посмотреть список продуктов и их детальное описание.
+3. Добавлена возможность регистрации нового пользователя. Пользователь с ролью ADMIN добавляется при старте приложения
+4. Теперь загружать продукты из csv-файла могут лишь администраторы (роль ADMIN). (admin/admin)
+5. С payment сервисов настроена oauth2.0 аутентификация.
+
+### Порядок запуска
+1. Исполнить скрипт run.sh
+2. Дождаться запуска. Перейти на http://localhost:9090 . Выполнить вход с данными admin / admin
+3. Создать Client. Client ID - e-store-client ; Client authentication - ON ; Service accounts roles - ON ; Redirect URL - http://localhost:8080/*
+4. Далее в директории /extra/startup-config/e-store/application.yaml скорректировать spring.security.oauth2.registration.payment.client-id и spring.security.oauth2.registration.payment.client-secret
+5. Выполнить из терминала в директории extra две команды:
+   - docker-compose up --force-recreate -d --no-deps --build e-store
+   - docker-compose up --force-recreate -d --no-deps --build payment-service
+6. Программа готова к работе
+
+### Известные сложности
+1. Иногда сервис Keycloak запускается дольше чем e-store и тогда e-store падает из-за отсутствия подключения. Рекомендутся перезапустить лишь контейнер e-store и все будет ОК
+
 ## Версия приложения release_v3. Спринт 7
 ### Нововведения:
 1. Добавлен RESTful-сервис платежей на Spring WebFlux. Запускается в контейнере на порту 8090.
@@ -43,3 +65,4 @@
 В правом верхнем углу представлены две кнопки: с корзиной и заказами. В корзине можно увидеть общую сумму заказа и формить заказ.
 
 Все завершенные заказы отражаются на странице заказов.
+

@@ -6,11 +6,12 @@ services:
       - db
       - payment-service
       - redis
+      - keycloack
     environment:
       SPRING_CONFIG_LOCATION: /app/config/application.yaml
     volumes:
       - ../simple-electronic-store/target:/app
-      - ./startup-config:/app/config
+      - ./startup-config/e-store:/app/config
     ports:
       - "8080:8080"
     command: java -jar /app/simple-electronic-store.jar
@@ -18,13 +19,21 @@ services:
       - "db:postgredb"
       - "payment-service:payment"
       - "redis:redis"
+      - "keycloack:keycloack"
   payment-service:
+    depends_on:
+      - keycloack
     image: openjdk:21-oracle
+    environment:
+      SPRING_CONFIG_LOCATION: /app/config/application.yaml
     volumes:
       - ../payment-service/target:/app
+      - ./startup-config/payment:/app/config
     ports:
       - "8090:8090"
     command: java -jar /app/payment-service.jar
+    links:
+      - "keycloack:keycloack"
   db:
     image: postgres:13.3
     environment:
@@ -43,22 +52,20 @@ services:
       REDIS_PASSWORD: 123456
       REDIS_PORT: 6379
       REDIS_DATABASE: 1
-#  keycloack:
-#    image: quay.io/keycloak/keycloak:latest
-#    command:
-#      - start-dev
-#    environment:
-#      DB_VENDOR: POSTGRES
-#      DB_ADDR: postgredb
-#      DB_DATABASE: yandex_practicum
-#      DB_SCHEMA: public
-#      DB_USER: estore_user
-#      DB_PASSWORD: changeit
-#      KEYCLOAK_ADMIN: admin
-#      KEYCLOAK_ADMIN_PASSWORD: admin
-#    links:
-#      - "db:postgredb"
-#    ports:
-#      - "9090:8080"
-#    depends_on:
-#      - db
+  keycloack:
+    image: quay.io/keycloak/keycloak:latest
+    command:
+      - start-dev
+    environment:
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://postgredb:5432/yandex_practicum
+      KC_DB_USERNAME: estore_user
+      KC_DB_PASSWORD: changeit
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: admin
+    links:
+      - "db:postgredb"
+    ports:
+      - "9090:8080"
+    depends_on:
+      - db

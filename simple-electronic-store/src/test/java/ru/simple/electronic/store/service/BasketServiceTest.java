@@ -4,11 +4,15 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.oauth2.client.ReactiveOAuth2AuthorizedClientManager;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import ru.simple.electronic.store.entity.ProductEntity;
 import ru.simple.electronic.store.entity.ProductOrderEntity;
+import ru.simple.electronic.store.entity.UserEntity;
 import ru.simple.electronic.store.repository.BasketRepository;
 import ru.simple.electronic.store.repository.ProductOrderRepository;
 import ru.simple.electronic.store.repository.ProductRepository;
+import ru.simple.electronic.store.repository.UserRepository;
 
 import java.math.BigDecimal;
 import java.util.UUID;
@@ -26,6 +30,10 @@ class BasketServiceTest {
     private ProductRepository productRepository;
     @Autowired
     private ProductOrderRepository productOrderRepository;
+    @Autowired
+    private UserRepository userRepository;
+    @MockitoBean
+    public ReactiveOAuth2AuthorizedClientManager manager;
 
     private final UUID productId = UUID.randomUUID();
     private final UUID orderId = UUID.randomUUID();
@@ -34,9 +42,16 @@ class BasketServiceTest {
      void before() {
         basketRepository.deleteAll().block();
         productRepository.deleteAll().block();
+        userRepository.deleteAll().block();
+
+        var user = new UserEntity().withId(UUID.randomUUID());
+        user.setUsername("username");
+        user.setPassword("password");
+        userRepository.save(user).block();
 
         var orderEntity = new ProductOrderEntity().withId(orderId);
         orderEntity.setStatus("NEW");
+        orderEntity.setUsername("username");
         productOrderRepository.save(orderEntity).block();
         var productEntity = new ProductEntity().withId(productId);
         productEntity.setTitle("Title");
@@ -47,15 +62,15 @@ class BasketServiceTest {
     @Test
     @Order(1)
     void addProduct() {
-//        var before = basketRepository.findAll().collectList().block();
-//        Assertions.assertTrue(CollectionUtils.isEmpty(before));
-//        basketService.addProduct(productId).block();
-//        var after = basketRepository.findAll().collectList().block();
-//        Assertions.assertTrue(CollectionUtils.isNotEmpty(after));
-//        Assertions.assertEquals(1, after.size());
-//        basketService.addProduct(productId).block();
-//        after = basketRepository.findAll().collectList().block();
-//        Assertions.assertEquals(1, after.size());
+        var before = basketRepository.findAll().collectList().block();
+        Assertions.assertTrue(CollectionUtils.isEmpty(before));
+        basketService.addProduct(productId, "username").block();
+        var after = basketRepository.findAll().collectList().block();
+        Assertions.assertTrue(CollectionUtils.isNotEmpty(after));
+        Assertions.assertEquals(1, after.size());
+        basketService.addProduct(productId, "username").block();
+        after = basketRepository.findAll().collectList().block();
+        Assertions.assertEquals(1, after.size());
     }
 
     @Test

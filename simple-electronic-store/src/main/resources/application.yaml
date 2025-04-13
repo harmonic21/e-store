@@ -14,6 +14,24 @@ spring:
     hibernate:
       ddl-auto: none
     show-sql: true
+  security:
+    oauth2:
+      client:
+        provider:
+          keycloak:
+            authorization-uri: http://keycloack:9090/realms/master/protocol/openid-connect/auth
+            token-uri: http://keycloack:9090/realms/master/protocol/openid-connect/token
+            user-info-uri: http://keycloack:9090/realms/master/protocol/openid-connect/userinfo
+            user-name-attribute: sub
+            jwk-set-uri: http://keycloack:9090/realms/master/protocol/openid-connect/certs
+        registration:
+          keycloak:
+            authorizationGrantType: authorization_code
+            provider: keycloak
+            client-id: e-store-client
+            client-secret: CCiB84dv2nJS5sxBjcqTMde5zVloK5E0
+            redirect-uri: '{baseUrl}/{action}/oauth2/code/{registrationId}'
+            scope: openid, profile, email
 client:
   payment-service:
     url: http://localhost:8090

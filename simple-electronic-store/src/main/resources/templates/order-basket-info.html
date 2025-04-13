@@ -10,6 +10,13 @@
 <a th:href="@{/}">Домой</a>
 
 <a th:href="@{/order/all}"><i class="fa fa-archive" style="font-size:36px; float: right"></i></a>
+<div style="float: right">
+    <i class="fa fa-address-card-o" style="font-size:36px"></i>
+    <br>
+    <span th:text="${#authentication?.principal?.username}">Stub</span>
+    <br>
+    <a th:href="@{/logout}" >Выйти</a>
+</div>
 
 <h2>Текущие товары в корзине</h2>
 <div th:each="orderItem : ${order.orderItems}" style="display: inline-block; width: 20%; overflow: hidden; border-style: solid; text-align: center">

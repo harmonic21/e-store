@@ -4,6 +4,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.oauth2.client.ReactiveOAuth2AuthorizedClientManager;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
@@ -24,19 +26,23 @@ class BasketControllerTest {
     private BasketController basketController;
     @MockitoBean
     private BasketService basketService;
+    @MockitoBean
+    public ReactiveOAuth2AuthorizedClientManager manager;
 
     @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     void addProductToBasketTest() throws Exception {
-//        UUID productId = UUID.fromString("4409ff9f-153f-43fe-b373-11e059d78b3c");
-//        doReturn(Mono.just(productId)).when(basketService).addProduct(eq(productId));
-//        webTestClient.put()
-//                .uri("/basket/add/4409ff9f-153f-43fe-b373-11e059d78b3c")
-//                .exchange()
-//                .expectStatus().isOk();
-//        verify(basketService, times(1)).addProduct(eq(UUID.fromString("4409ff9f-153f-43fe-b373-11e059d78b3c")));
+        UUID productId = UUID.fromString("4409ff9f-153f-43fe-b373-11e059d78b3c");
+        doReturn(Mono.just(productId)).when(basketService).addProduct(eq(productId), anyString());
+        webTestClient.put()
+                .uri("/basket/add/4409ff9f-153f-43fe-b373-11e059d78b3c")
+                .exchange()
+                .expectStatus().isOk();
+        verify(basketService, times(1)).addProduct(eq(UUID.fromString("4409ff9f-153f-43fe-b373-11e059d78b3c")), anyString());
     }
 
     @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     void deleteProductFromBasketTest() throws Exception {
         var uuid = UUID.fromString("4409ff9f-153f-43fe-b373-11e059d78b3c");
         doReturn(Mono.just(uuid)).when(basketService).deleteProduct(eq(uuid));
@@ -48,6 +54,7 @@ class BasketControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     void clearBasketTest() throws Exception {
         var uuid = UUID.fromString("4409ff9f-153f-43fe-b373-11e059d78b3c");
         doReturn(Mono.empty()).when(basketService).clearBasket(eq(uuid));

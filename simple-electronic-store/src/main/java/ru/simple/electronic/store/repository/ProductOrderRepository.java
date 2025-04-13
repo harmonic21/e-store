@@ -15,7 +15,7 @@ import java.util.UUID;
 public interface ProductOrderRepository extends R2dbcRepository<ProductOrderEntity, UUID> {
 
     Mono<ProductOrderEntity> findProductOrderByStatusAndUsername(String status, String username);
-    Flux<ProductOrderEntity> findAllProductOrderByStatus(String status);
+    Flux<ProductOrderEntity> findAllProductOrderByStatusAndUsername(String status, String username);
 
     @Query(value = """
             SELECT SUM(b.product_count * p.price) FROM basket b

@@ -10,10 +10,10 @@
 
 <a th:href="@{/}">Домой</a>
 
-<a th:href="@{/order/current/info}"><i class="fa fa-shopping-cart" style="font-size:36px; float: right"></i></a>
-<a th:href="@{/order/all}"><i class="fa fa-archive" style="font-size:36px; float: right"></i></a>
 <div>
     <div th:if="${#authentication?.principal?.username != null}" style="float: right">
+        <a th:href="@{/order/current/info}"><i class="fa fa-shopping-cart" style="font-size:36px; float: right"></i></a>
+        <a th:href="@{/order/all}"><i class="fa fa-archive" style="font-size:36px; float: right"></i></a>
         <i class="fa fa-address-card-o" style="font-size:36px"></i>
         <br>
         <span th:text="${#authentication?.principal?.username}">Stub</span>
@@ -22,6 +22,8 @@
     </div>
     <div th:unless="${#authentication?.principal?.username != null}">
         <a th:href="@{/login}" style="float: right">Войти<i class="fa fa-address-card-o" style="font-size:36px; float: right"></i></a>
+        <br>
+        <a th:href="@{/user/registration}" style="float: right">Зарегистрироваться</a>
     </div>
 </div>
 

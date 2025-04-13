@@ -1,5 +1,6 @@
 package ru.simple.electronic.store.service;
 
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
 import org.springframework.security.core.userdetails.User;
@@ -20,24 +21,30 @@ public class UserService implements ReactiveUserDetailsService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
+    @PostConstruct
+    public void addAdmin() {
+        userRepository.findByUsername("admin")
+                .switchIfEmpty(saveNewUser(new UserDto().setUsername("admin").setPassword("admin"), "ADMIN"))
+                .subscribe();
+    }
+
     @Override
     public Mono<UserDetails> findByUsername(String username) {
         return userRepository.findByUsername(username)
-                .log()
                 .map(
                         user -> User.builder()
                                 .username(user.getUsername())
                                 .password(user.getPassword())
                                 .roles(user.getRoles())
                                 .build()
-                ).log();
+                );
     }
 
-    public Mono<UserEntity> saveNewUser(UserDto userDto) {
+    public Mono<UserEntity> saveNewUser(UserDto userDto, String... roles) {
         UserEntity user = new UserEntity().withId(UUID.randomUUID());
         user.setUsername(userDto.getUsername());
         user.setPassword(passwordEncoder.encode(userDto.getPassword()));
-        user.setRoles(new String[]{"USER"});
+        user.setRoles(roles);
         return userRepository.save(user);
     }
 }

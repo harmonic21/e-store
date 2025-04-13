@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -39,6 +40,10 @@ public class ProductController {
     public Mono<Rendering> getProducts(Model model,
                                        @ModelAttribute(value = "filtration") FiltrationDto filtrationDto,
                                        Authentication authentication) {
+        Flux<String> authorities = authentication != null ?
+                Flux.fromIterable(authentication.getAuthorities()).map(GrantedAuthority::getAuthority) :
+                Flux.empty();
+
         var allProducts = productService.findAll(filtrationDto);
         Mono<ProductOrderDto> currentOrder = authentication != null && authentication.isAuthenticated() ?
                 productOrderService.findCurrentOrderOrCreateNew(authentication.getName()) :
@@ -49,6 +54,7 @@ public class ProductController {
                         .modelAttribute("products", allProducts)
                         .modelAttribute("order", currentOrder)
                         .modelAttribute("filtration", filtrationDto)
+                        .modelAttribute("authorities", authorities)
                 )
         ).map(Rendering.Builder::build);
     }

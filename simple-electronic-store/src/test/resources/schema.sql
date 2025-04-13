@@ -1,3 +1,10 @@
+CREATE TABLE IF NOT EXISTS e_store_user (
+    id UUID PRIMARY KEY,
+    username varchar(255) NOT NULL UNIQUE,
+    password text NOT NULL,
+    roles varchar[]
+);
+
 CREATE TABLE IF NOT EXISTS product (
     id UUID PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
@@ -9,7 +16,10 @@ CREATE TABLE IF NOT EXISTS product (
 CREATE TABLE IF NOT EXISTS product_order (
     id UUID PRIMARY KEY,
     order_sum NUMERIC NOT NULL DEFAULT 0,
-    status VARCHAR(255) NOT NULL
+    status VARCHAR(255) NOT NULL,
+    username VARCHAR(255) NOT NULL,
+
+    FOREIGN KEY(username) REFERENCES e_store_user(username)
 );
 
 CREATE TABLE IF NOT EXISTS basket (

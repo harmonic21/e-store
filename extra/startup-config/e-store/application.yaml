@@ -1,0 +1,28 @@
+spring:
+  thymeleaf:
+    encoding: UTF-8
+  r2dbc:
+    url: r2dbc:postgresql://postgredb:5432/yandex_practicum
+    username: estore_user
+    password: changeit
+  security:
+    oauth2:
+      client:
+        provider:
+          keycloak:
+            issuer-uri: http://keycloack:8080/realms/master
+        registration:
+          payment:
+            provider: keycloak
+            authorizationGrantType: client_credentials
+            client-id: e-store-client
+            client-secret: e5AsT2ztHevezC7Oj16Go3DwDYO1FScH
+            scope: profile
+            clientAuthenticationMethod: client_secret_post
+client:
+  payment-service:
+    url: http://payment:8090
+redis:
+  hostname: redis
+  port: 6379
+  minute-expire: 5
